@@ -1,0 +1,5 @@
+@import "mixins";
+
+.form-control {
+  @include flex;
+}

@@ -1,0 +1,189 @@
+@import "../../../assets/styles/common";
+
+.event-disabled {
+  pointer-events: none;
+}
+
+::ng-deep {
+  .event-disabled {
+    pointer-events: none;
+  }
+}
+
+.main-container {
+
+  .top-bar {
+    width: 100%;
+    padding: 30px;
+    background-color: $color-brand-secondary;
+
+    .icons {
+      @include flex-left-center;
+      margin-left: 120px;
+
+      .icons-image {
+        margin-right: 15px;
+        font-size: 25px;
+        color: $color-warning;
+      }
+
+      .icons-desc {
+        margin-right: 15px;
+        font-family: "Damion Regular", serif;
+        font-size: 18px;
+      }
+    }
+  }
+
+  .room-details {
+    width: 100%;
+
+    .room-details-header {
+      width: 100%;
+
+      h2 {
+        margin-left: 150px;
+        margin-top: 60px;
+        font-size: 30px;
+        font-family: "Damion Regular", serif;
+      }
+    }
+
+    .room-details-content {
+      margin: 30px 0 100px 150px;
+      width: 60%;
+
+      p {
+        font-size: 16px;
+        font-family: "Damion Regular", serif;
+        line-height: 30px;
+
+        span {
+          margin-left: 10px;
+        }
+      }
+    }
+  }
+
+  .room-equipments-header, .calendar-header {
+    width: 100%;
+    background-color: $color-brand-secondary;
+    padding-top: 40px;
+    padding-bottom: 50px;
+
+    h2 {
+      margin-left: 150px;
+      font-size: 30px;
+      font-family: "Damion Regular", serif;
+    }
+  }
+
+  .calendar-header {
+    background-color: $color-white;
+    margin-top: 60px;
+  }
+
+  .room-equipments {
+    @include flex-center-center;
+    padding: 50px;
+    height: 570px;
+    background-color: $color-brand-secondary;
+
+    .room-equipments-picture {
+      position: relative;
+      width: 700px;
+
+      carousel {
+        width: 100%;
+        position: absolute;
+        height: 500px !important;
+        top: -280px;
+        left: -50px;
+      }
+    }
+
+    .room-equipments-description {
+      @include flex-center-center;
+      margin-bottom: 100px;
+
+      .additional-room-equipments {
+        margin-right: 40px;
+      }
+
+      .room-equipments-description-header {
+        margin-bottom: 30px;
+
+        h2 {
+          font-size: 30px;
+          font-family: "Damion Regular", serif;
+        }
+      }
+
+      .room-equipments-description-content {
+        ul {
+          li {
+            margin-left: 50px;
+            margin-bottom: 20px;
+            list-style-type: disc;
+            font-size: 22px;
+            font-family: "Damion Regular", serif;
+            color: $color-warning;
+          }
+
+          li span {
+            color: black;
+          }
+        }
+      }
+    }
+  }
+
+  .calendar-description {
+    margin-left: 150px;
+    margin-bottom: 60px;
+
+    p {
+      font-family: "Damion Regular", serif;
+      font-size: 16px;
+    }
+  }
+
+  .price {
+    @include flex-center-center;
+    width: 100%;
+    margin-bottom: 60px;
+
+    p {
+      font-size: 20px;
+      font-family: "Damion Regular";
+    }
+  }
+
+  .calendar {
+    @include flex-center-center;
+    margin: 10px 0 60px 0;
+
+    .calendar-position {
+      width: 800px;
+    }
+  }
+
+  .reservation-button {
+    @include flex-center-center;
+    margin-bottom: 60px;
+
+    button {
+      font-size: 25px;
+      background-color: $color-brand-seventh;
+      border: none;
+      color: #ffffff;
+      width: 150px;
+      height: 40px;
+      font-family: "Damion Regular";
+    }
+
+    button:hover {
+      background-color: $color-brand-eighth;
+    }
+  }
+}

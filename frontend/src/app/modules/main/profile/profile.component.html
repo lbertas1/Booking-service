@@ -1,0 +1,236 @@
+<div class="profile">
+  <div class="profile-container-up">
+    <div class="main-container">
+      <div class="main-container__left-side">
+        <div class="picture-shadow">
+          <button>
+            {{ 'Change picture' | translatePipe }}
+          </button>
+        </div>
+        <div class="user-picture">
+          <img src="app/assets/images/main/user.jpg" alt="user picture">
+        </div>
+        <div class="caption">
+          <h2>
+            {{ profile.user.username }}
+          </h2>
+        </div>
+        <div class="change-password-button">
+          <button (click)="openModal('changePasswordModal')">
+            {{ 'Change password' | translatePipe }}
+          </button>
+        </div>
+      </div>
+
+      <div class="main-container__right-side">
+        <div class="right-side-header">
+          <h2>
+            {{ 'User information' | translatePipe }}
+          </h2>
+          <div class="separator-header">
+          </div>
+        </div>
+        <div class="user-info">
+          <div class="user-property">
+            <div class="user-property-name">
+              <label for="">{{ 'Name:' | translatePipe }} </label>
+            </div>
+            <div class="user-property-value">
+              <p>{{ profile.user.name }}</p>
+            </div>
+          </div>
+          <div class="user-property">
+            <div class="user-property-name">
+              <label for="">{{ 'Surname:' | translatePipe }} </label>
+            </div>
+            <div class="user-property-value">
+              <p>{{ profile.user.surname }}</p>
+            </div>
+          </div>
+          <div class="user-property">
+            <div class="user-property-name">
+              <label for="">{{ 'Date of birth:' | translatePipe }} </label>
+            </div>
+            <div class="user-property-value">
+              <p>{{ profile.user.birthDate }}</p>
+            </div>
+          </div>
+          <div class="user-property">
+            <div class="user-property-name">
+              <label for="">{{ 'Email:' | translatePipe }} </label>
+            </div>
+            <div class="user-property-value">
+              <p>{{ profile.user.email }}</p>
+            </div>
+          </div>
+          <div class="user-property">
+            <div class="user-property-name">
+              <label for="">{{ 'Phone:' | translatePipe}} </label>
+            </div>
+            <div class="user-property-value">
+              <p>{{ profile.user.phone }}</p>
+            </div>
+          </div>
+          <div class="user-property">
+            <div class="user-property-name">
+              <label for="">{{ 'Address:' | translatePipe }} </label>
+            </div>
+            <div class="user-property-value">
+              <p>{{ profile.user.address }}</p>
+            </div>
+          </div>
+          <div class="user-property">
+            <div class="user-property-name">
+              <label for="">{{ 'City:' | translatePipe }} </label>
+            </div>
+            <div class="user-property-value">
+              <p>{{ profile.user.city }}</p>
+            </div>
+          </div>
+          <div class="user-property">
+            <div class="user-property-name">
+              <label for="">{{ "Zip-code:" | translatePipe }} </label>
+            </div>
+            <div class="user-property-value">
+              <p>{{ profile.user.zipCode }}</p>
+            </div>
+          </div>
+          <div class="user-property">
+            <div class="user-property-name">
+              <label for="">{{ 'Country:' | translatePipe }} </label>
+            </div>
+            <div class="user-property-value">
+              <p>{{ profile.user.country }}</p>
+            </div>
+          </div>
+          <div class="user-property-button">
+            <button (click)="openModal('updateUserModal')">{{ 'Change data' | translatePipe }}</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  <div class="middle-section-reservations">
+    <div class="separator">
+    </div>
+    <div class="user-reservations">
+      <div class="table-reservations-header">
+        <h2>{{ 'Reservations' | translatePipe }}</h2>
+        <div class="separator-table-header">
+        </div>
+      </div>
+      <table>
+        <thead>
+        <tr>
+          <th>Lp</th>
+          <th>{{ 'Room number' | translatePipe }}</th>
+          <th>{{ 'From' | translatePipe }}</th>
+          <th>{{ 'To' | translatePipe }}</th>
+          <th>{{ 'Price for night' | translatePipe }}</th>
+          <th>{{ 'Amount for reservation' | translatePipe }}</th>
+          <th>{{ 'Status' | translatePipe }}</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let reservation of profile.reservations; index as i">
+          <td>{{ i }}</td>
+          <td>{{ reservation.roomNumber }}</td>
+          <td>{{ reservation.startOfBooking | date:'dd.MM.yyy' }}</td>
+          <td>{{ reservation.endOfBooking | date:'dd.MM.yyy' }}</td>
+          <td>{{ reservation.priceForNight }}</td>
+          <td>{{ reservation.totalAmountForReservation }}</td>
+          <td>{{ getStatusName(reservation.paymentStatus) | translatePipe }}</td>
+        </tr>
+        </tbody>
+      </table>
+      <div class="section-button">
+        <button [routerLink]="'/main/rooms'">
+          {{ 'New reservation' | translatePipe }}
+        </button>
+      </div>
+    </div>
+  </div>
+  <div class="middle-section-opinion">
+    <div class="separator">
+    </div>
+    <div class="user-opinions">
+      <div class="table-opinion-header">
+        <h2>
+          {{ 'Opinions' | translatePipe }}
+        </h2>
+        <div class="separator-table-header">
+        </div>
+      </div>
+      <table>
+        <thead>
+        <tr>
+          <th>Lp</th>
+          <th>{{ 'Date' | translatePipe }}</th>
+          <th>{{ 'Opinion' | translatePipe }}</th>
+          <th>{{ 'Evaluation' | translatePipe }}</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let reservation of profile.reservations; index as i">
+          <td>{{ i }}</td>
+          <td class="date">{{ reservation.opinionDate }}</td>
+          <td>
+            <div class="opinion-message-table-row">
+              {{ reservation.opinionMessage }}
+            </div>
+          </td>
+          <td>{{ reservation.opinionEvaluation }}</td>
+        </tr>
+        </tbody>
+      </table>
+      <div class="section-button">
+        <button (click)="openModal('addOpinionModal')">
+          {{ 'Add opinion' | translatePipe }}
+        </button>
+      </div>
+    </div>
+  </div>
+  <div class="down-section-discounts">
+    <div class="separator">
+    </div>
+    <div class="user-discounts">
+      <div class="table-discounts-header">
+        <h2>
+          {{ 'Available discounts and promotions' | translatePipe }}
+        </h2>
+        <div class="separator-table-header">
+        </div>
+      </div>
+        <table>
+          <thead>
+          <tr>
+            <th>Lp</th>
+            <th>{{ 'Amount' | translatePipe }}</th>
+            <th>{{ 'How long in days' | translatePipe }}</th>
+            <th>{{ 'Discount on' | translatePipe }}</th>
+            <th>{{ 'Realised' | translatePipe }}</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngFor="let i of [1, 2, 3, 4, 5]">
+            <td>{{ i }}</td>
+            <td>{{ discount.amount }}</td>
+            <td>{{ discount.howLongAvailableInDays }}</td>
+            <td>{{ discount.additionalInfo }}</td>
+            <td>{{ discount.realised }}</td>
+          </tr>
+          </tbody>
+        </table>
+      <div class="section-button">
+        <button>
+          {{ 'Remove realised discounts' | translatePipe }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<app-update-user-modal [profile]="profile"></app-update-user-modal>
+<app-change-password-modal></app-change-password-modal>
+<app-add-opinion-modal></app-add-opinion-modal>

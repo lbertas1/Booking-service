@@ -1,0 +1,41 @@
+<ngx-smart-modal #addOpinionModal identifier="addOpinionModal" customClass="add-opinion-modal">
+  <div class="main-container">
+    <div class="header">
+      <h2>
+        {{ 'Add opinion' | translatePipe }}
+      </h2>
+    </div>
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <div class="opinion-input">
+        <div class="opinion-input-name">
+          <label for="">{{ 'Evaluation: ' | translatePipe }} </label>
+        </div>
+        <div class="opinion-input-evaluation">
+          <input
+            type="number"
+            placeholder="5"
+            formControlName="evaluation"
+            min="1"
+            max="5">
+        </div>
+      </div>
+      <div class="error" *ngIf="isSubmitted && formControls.evaluation.errors">
+        <span *ngIf="formControls.evaluation.errors.required">EVALUATION IS REQUIRED</span>
+      </div>
+      <div class="opinion-input">
+        <div class="opinion-input-name">
+          <label for="">{{ 'Message: ' | translatePipe }} </label>
+        </div>
+        <div class="opinion-input-message">
+          <textarea placeholder="{{ 'Message: ' }}" formControlName="opinion"></textarea>
+        </div>
+      </div>
+      <div class="error" *ngIf="isSubmitted && formControls.opinion.errors">
+        <span *ngIf="formControls.opinion.errors.required">OPINION IS REQUIRED</span>
+      </div>
+      <div class="user-property-button">
+        <button type="submit" [disabled]="isSubmitted">{{ 'Add opinion: ' | translatePipe }}</button>
+      </div>
+    </form>
+  </div>
+</ngx-smart-modal>

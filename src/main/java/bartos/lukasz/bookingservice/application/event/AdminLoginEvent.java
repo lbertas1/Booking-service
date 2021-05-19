@@ -1,0 +1,16 @@
+package bartos.lukasz.bookingservice.application.event;
+
+import lombok.Getter;
+import lombok.ToString;
+import org.springframework.context.ApplicationEvent;
+
+@Getter
+@ToString
+public class AdminLoginEvent extends ApplicationEvent {
+    private final String adminUsername;
+
+    public AdminLoginEvent(Object source, String adminUsername) {
+        super(source);
+        this.adminUsername = adminUsername;
+    }
+}

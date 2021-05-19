@@ -1,0 +1,213 @@
+@import "../../assets/styles/common";
+
+.main {
+  min-height: calc(100vh - 158px);
+  flex-direction: column;
+
+  .container-up {
+    @include flex-center-up;
+    width: 100%;
+
+    .filters-frame {
+      position: absolute;
+      width: 100%;
+      height: 275px;
+      background-color: $color-brand-secondary;
+      //box-shadow: inset 0 0 30px $color-brand-nineth;
+      transform: translateY(-200px);
+    }
+
+    .filters {
+      position: absolute;
+      transform: translateY(-30px);
+      z-index: 100000;
+
+      .inputs {
+        @include flex-center-center;
+
+        ::ng-deep {
+          input {
+            //background: $color-brand-fifth !important;
+            background: $color-white;
+            font-size: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+            width: 200px;
+            height: 60px;
+            border: none;
+            box-shadow: 1px 1px 10px;
+          }
+
+          .dp-calendar-wrapper {
+            border: 5px solid $color-brand-sixth;
+          }
+
+          .dp-calendar-day {
+            width: 45px;
+            height: 45px;
+
+          }
+
+          .dp-calendar-weekday {
+            height: 35px;
+            line-height: 35px;
+            width: 45px;
+          }
+
+          .dp-calendar-nav-container {
+            height: 45px;
+          }
+
+          .dp-calendar-nav-left {
+            margin-bottom: 10px;
+          }
+
+          .dp-nav-header-btn {
+            height: 30px;
+            width: 100px;
+          }
+        }
+
+        .number-people-input {
+          @include flex-space-between;
+          width: 200px;
+          height: 70px;
+          line-height: 100%;
+          transform: translateY(-5px);
+
+          select {
+            width: 200px;
+            font-size: 20px;
+            margin: 0 0 10px 0;
+            border: none;
+            background: $color-white;
+            //background: $color-brand-fifth;
+            box-shadow: 1px 1px 10px;
+          }
+        }
+      }
+
+      .filter-button {
+        button {
+          width: 200px;
+          height: 60px;
+          transform: translateY(-5px);
+          margin: 0 0 10px 0;
+          font-size: 20px;
+          border: none;
+          background: $color-brand-seventh;
+          box-shadow: 1px 1px 10px;
+        }
+
+        button:hover {
+          background-color: $color-brand-eighth;
+        }
+      }
+    }
+
+  }
+
+  .container-middle {
+    @include flex-center-up;
+    width: 100%;
+    margin-top: 200px;
+    margin-bottom: 40px;
+
+    .middle-section {
+      background-color: $color-brand-secondary;
+      width: 800px;
+    }
+
+    .container-middle-header {
+      width: 500px;
+      margin-top: 10px;
+      margin-left: 60px;
+      margin-bottom: 30px;
+      //font-family: "Damion Regular";
+    }
+
+    .separator {
+      margin: 15px 150px;
+      width: 400px;
+      height: 2px;
+      background-color: black;
+      border: none;
+    }
+
+    .location, .attractions, .service, .modern-style, .zoo {
+      @include flex-center-up;
+      width: 800px;
+
+      .location-describe, .attractions-describe, .service-describe, .modern-style-describe, .zoo-describe {
+        margin-left: 10px;
+        margin-bottom: 10px;
+        width: 700px;
+        //font-family: "Damion Regular";
+
+        h2 {
+          margin-bottom: 10px;
+        }
+
+        ul {
+          li {
+            margin-left: 30px;
+            margin-bottom: 10px;
+            list-style-type: disc;
+          }
+        }
+
+        .location-picture, .attraction-picture, .service-picture, .modern-style-picture, .zoo-picture {
+          img {
+            width: 700px;
+            margin-top: 10px;
+          }
+        }
+      }
+    }
+  }
+
+  .side-section {
+    width: 300px;
+
+    hr {
+      width: 230px;
+    }
+
+    .side-section-header {
+      margin: 10px 10px;
+
+      h2 {
+        font-family: "Damion Regular";
+      }
+    }
+
+    .side-section-opinion {
+      margin: 20px 10px;
+
+      .opinion-date {
+        margin: 10px 0;
+        font-size: 14px;
+        color: $color-brand-eighth;
+      }
+
+      .opinion-content {
+        font-family: "Damion Regular";
+        font-size: 16px;
+      }
+    }
+
+    .side-section-separator {
+      margin: 15px 0;
+      width: 200px;
+      height: 2px;
+      background-color: black;
+    }
+  }
+
+  .chat {
+    position: fixed;
+    bottom: 15px;
+    right: 15px;
+    z-index: 100000000;
+  }
+}

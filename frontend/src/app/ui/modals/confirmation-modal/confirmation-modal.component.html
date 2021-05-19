@@ -1,0 +1,22 @@
+<ngx-smart-modal #confirmationModal identifier="confirmationModal" customClass="confirmation-modal">
+  <div class="main">
+    <div class="title">
+      <h1>
+        {{ this.header }}
+      </h1>
+    </div>
+    <div class="message">
+      <p>
+        {{ this.message }}
+      </p>
+    </div>
+    <div class="confirmation">
+      <button (click)="confirmationValue(false)">
+        {{ 'No' | translatePipe }}
+      </button>
+      <button (click)="confirmationValue(true)">
+        {{ 'Yes' | translatePipe }}
+      </button>
+    </div>
+  </div>
+</ngx-smart-modal>

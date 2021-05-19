@@ -1,0 +1,52 @@
+<div class="main">
+  <div class="title">
+    <div class="login">
+      <h3>{{ username }}</h3>
+    </div>
+    <div class="exit-button">
+      <button (click)="closeChat()">X</button>
+    </div>
+  </div>
+  <div class="messages" #messageContainer [scrollTop]="messageContainer.scrollHeight">
+    <div class="message" #particularMessage *ngFor="let message of conversation">
+      <div class="this-message" *ngIf="message.index === messageIndex.THIS">
+        <div class="this-message-content">
+          <div class="this-message-content-styles messages-common-styles"
+               [ngClass]="{ 'message-border' : message.index === messageIndex.THIS }">
+            <p>
+              {{ message.message }}
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="incoming-message" *ngIf="message.index === messageIndex.INCOMING">
+        <div class="incoming-message-content">
+          <div class="incoming-message-content-styles messages-common-styles"
+               [ngClass]="{ 'message-border' : message.index === messageIndex.INCOMING }">
+            <p>
+              {{ message.message }}
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="error-message" *ngIf="message.index === messageIndex.ERROR">
+        <div class="error-message-content">
+          <p>
+            <b>{{ message.message }}</b>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="input-section">
+    <div class="field-part">
+      <textarea placeholder="Provide your message" [(ngModel)]="message"
+                (keypress)="onKeyPress($event.code)"></textarea>
+    </div>
+    <div class="button-part">
+      <button (click)="sendMessage()">
+        Send
+      </button>
+    </div>
+  </div>
+</div>

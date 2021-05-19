@@ -1,0 +1,96 @@
+@import "../../../assets/styles/common";
+
+::ng-deep {
+  .add-opinion-modal {
+    .nsm-content {
+      padding: 0;
+      width: 580px;
+
+      button {
+        color: $color-white;
+      }
+    }
+  }
+}
+
+.main-container {
+  width: 100%;
+  height: 100%;
+
+  .header {
+    @include flex-direction-column-center;
+    width: 100%;
+    background-color: $color-brand-seventh;
+    margin-bottom: 15px;
+
+    h2 {
+      margin: 10px 0;
+      color: $color-white;
+      font-family: "Damion Regular", serif;
+    }
+  }
+
+  .opinion-input {
+    @include flex-left-center;
+    //width: 600px;
+    width: 100%;
+    font-size: 20px;
+
+    .opinion-input-name {
+      width: 100px;
+      margin: 0 0 15px 15px;
+      font-family: "Damion Regular", serif;
+    }
+
+    .opinion-input-evaluation {
+      margin-bottom: 15px;
+      font-family: "Damion Regular", serif;
+
+      input {
+        width: 50px;
+        border: 1px solid $color-black;
+        font-size: 20px;
+      }
+    }
+
+    .opinion-input-message {
+      margin-bottom: 15px;
+      font-family: "Damion Regular", serif;
+
+      textarea {
+        width: 450px;
+        height: 100px;
+        margin-right: 15px;
+        border: 1px solid $color-black;
+        font-size: 20px;
+      }
+    }
+  }
+
+  .error {
+    color: $color-danger;
+    margin: 0 10px 15px 0;
+
+    span {
+      font-family: "Damion Regular";
+    }
+  }
+
+  .user-property-button {
+    @include flex-center-up;
+    margin: 0 0 15px 0;
+    width: 100%;
+
+    button {
+      font-size: 16px;
+      background-color: $color-brand-seventh;
+      padding: 10px;
+      border: none;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: $color-brand-eighth;
+    }
+  }
+}

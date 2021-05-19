@@ -1,0 +1,13 @@
+{
+  "properties": [
+    {
+      "name": "email.address",
+      "type": "java.lang.String",
+      "description": "Description for email.address."
+    },
+    {
+      "name": "email.password",
+      "type": "java.lang.String",
+      "description": "Description for email.password."
+    }
+  ] }

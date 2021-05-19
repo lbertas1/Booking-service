@@ -1,0 +1,208 @@
+<div class="main-container">
+  <div class="top-bar">
+    <div class="icons">
+      <div class="icons-image">
+        <i class="fas fa-user-friends"></i>
+      </div>
+      <div class="icons-desc">
+        <b>
+          {{ 'Room for max ' | translatePipe }}
+          {{ room.roomCapacity }}
+          <span *ngIf="room.roomCapacity > 1">{{ ' people' | translatePipe }}</span>
+          <span *ngIf="room.roomCapacity < 2">{{ ' person' | translatePipe }}</span>
+        </b>
+      </div>
+      <div class="icons-image">
+        <i class="fas fa-paw"></i>
+      </div>
+      <div class="icons-desc">
+        <b>
+          {{ 'Room suitable for pets' | translatePipe }}
+        </b>
+      </div>
+      <div class="icons-image">
+        <i class="fas fa-wheelchair"></i>
+      </div>
+      <div class="icons-desc">
+        <b>
+          {{ 'Room adapted for the disabled' | translatePipe }}
+        </b>
+      </div>
+    </div>
+  </div>
+  <div class="room-details">
+    <div class="room-details-header">
+      <h2>
+        {{ 'Room description' | translatePipe }}
+      </h2>
+    </div>
+    <div class="room-details-content">
+      <p>
+        {{ 'Very comfortable, beautifully arranged, spacious, with a beautiful view.' | translatePipe }}
+        <br>
+        <br>
+        {{ 'The room will satisfy even the most demanding customers. So far, no customer has left dissatisfied.' | translatePipe }}
+        <br>
+        <br>
+        {{ 'Our hotel boasts the highest ratings in world rankings. Common sacrifice of the hotel staff and management has brought the benefits of a 5-star award, as well as victories in last years competition for the most attractive hotels. The price-quality ratio of the services offered is incomparably higher than that of the competition.' | translatePipe }}
+        <br>
+        <br>
+        {{ room.description }}
+        <br>
+        <br>
+        {{ 'DEPARTURE: ' | translatePipe }}
+        <span>
+          <b>
+            {{ 'to ' | translatePipe }}
+            {{ '12:00' }}
+          </b>
+        </span>
+        <br>
+        {{ 'ARRIVAL: ' | translatePipe }}
+        <span>
+          <b>
+            {{ 'from ' | translatePipe }}
+            {{ '14:00' }}
+          </b>
+        </span>
+        <br>
+        <br>
+        <b>
+          {{ 'Price for night: ' | translatePipe }}
+          {{ room.priceForNight }}
+          {{ ' ' }}
+          {{ 'dollars' | translatePipe }}
+        </b>
+        <br>
+        <br>
+        <b>
+          {{ 'Parking space included in the reservation price.' | translatePipe }}
+        </b>
+      </p>
+    </div>
+  </div>
+  <div class="room-equipments-header">
+    <h2>
+      {{ 'Details of the room' | translatePipe }}
+    </h2>
+  </div>
+  <div class="room-equipments">
+    <div class="room-equipments-picture">
+      <div class="carousel">
+        <carousel
+          [images]="images"
+          [loop]="true"
+          [autoplay]="true"
+          objectFit="cover"
+          cellWidth="100%"
+          [transitionDuration]="1500"></carousel>
+      </div>
+    </div>
+    <div class="room-equipments-description">
+      <div class="additional-room-equipments">
+        <div class="room-equipments-description-header">
+          <h2>{{ 'Room equipments' | translatePipe }}</h2>
+        </div>
+        <div class="room-equipments-description-content">
+          <ul>
+            <li *ngFor="let eq of room.equipments">
+            <span>
+              {{ eq | translatePipe }}
+            </span>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="standard-room-equipments">
+        <div class="room-equipments-description-header">
+          <h2>{{ 'In every room' | translatePipe }}</h2>
+        </div>
+        <div class="room-equipments-description-content">
+          <ul>
+            <li>
+              <span>
+                {{ 'Internet' | translatePipe }}
+              </span>
+            </li>
+            <li>
+              <span>
+                {{ 'Sweet treat' | translatePipe }}
+              </span>
+            </li>
+            <li>
+              <span>
+                {{ 'Bathroom with shower' | translatePipe }}
+              </span>
+            </li>
+            <li>
+              <span>
+                {{ 'Phone' | translatePipe }}
+              </span>
+            </li>
+            <li>
+              <span>
+                {{ 'Cosmetics from Giorgio Armani' | translatePipe }}
+              </span>
+            </li>
+            <li>
+              <span>
+                {{ 'Towels' | translatePipe }}
+              </span>
+            </li>
+            <li>
+              <span>
+                {{ 'TV' | translatePipe }}
+              </span>
+            </li>
+            <li>
+              <span>
+                {{ 'Laptop' | translatePipe }}
+              </span>
+            </li>
+            <li>
+              <span>
+                 {{ 'Iron and ironing board' | translatePipe }}
+              </span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="calendar-header">
+    <h2>
+      {{ 'Check available dates' | translatePipe }}
+    </h2>
+  </div>
+  <div class="calendar-description">
+    <p>
+      {{ 'Black days are not available. Choose a date from among the days that are not colored.' | translatePipe }}
+    </p>
+  </div>
+  <div class="price" *ngIf="reservationPrice !== undefined && reservationPrice">
+    <p>
+      <b>
+        {{ 'Booking cost: ' | translatePipe }}
+        {{ reservationPrice }}
+        {{ 'dollars' | translatePipe }}
+      </b>
+    </p>
+  </div>
+  <div class="calendar">
+    <div class="calendar-position">
+      <full-calendar #calendar [options]="calendarOptions">
+      </full-calendar>
+    </div>
+  </div>
+  <div class="reservation-button">
+    <button (click)="createReservation()">
+      {{ 'Book it' | translatePipe }}
+    </button>
+  </div>
+</div>
+
+<app-confirmation-modal
+[header]="header"
+[message]="confirmationMessage"
+(confirmation)="confirmReservation($event)">
+</app-confirmation-modal>

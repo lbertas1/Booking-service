@@ -1,0 +1,29 @@
+@import "../../assets/styles/common";
+
+.footer {
+  @include flex-space-between;
+  background-color: $color-brand-third;
+  height: 50px;
+
+  .footer__left {
+    @include flex-center-center;
+    p {
+      font-family: "Damion Regular", Serif;
+      font-size: 25px;
+      color: $color-white;
+    }
+  }
+
+  padding: 0 15px;
+
+  img {
+    height: 40px;
+  }
+
+  &__right {
+    @include flex-center-center;
+    p {
+      color: $color-white;
+    }
+  }
+}
