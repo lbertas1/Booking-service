@@ -36,4 +36,7 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
 
     @Query("select r.startOfBooking as reservationStartDate, r.endOfBooking as reservationEndDate from Reservation r where r.room.id = :roomId")
     Set<RoomBookingDatesProjection> findRoomBookingDates(Long roomId);
+
+    @Query("select MAX(r.reservationNumber) from Reservation r")
+    Long getBiggestReservationNumber();
 }

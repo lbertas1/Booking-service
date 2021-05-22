@@ -48,8 +48,7 @@ public class ReservationService {
     }
 
     @Transactional
-    public ReservationResponseDto save(ReservationRequestDto reservationRequestDto) throws ReservationServiceException {
-        // WALIDACJA, CZY PRZED ZAPISEM DO BAZY, CZY NIE MA TAM JUZ REZERWACJI NA TEN POKÓJ I TERMIN
+    public ReservationDto save(ReservationRequestDto reservationRequestDto) throws ReservationServiceException {
         validateReservationRequest(reservationRequestDto);
 
         User user = userRepository
@@ -74,13 +73,14 @@ public class ReservationService {
 
         newReservation.setUser(user);
         newReservation.setRoom(room);
+        newReservation.setReservationNumber(reservationRepository.getBiggestReservationNumber() + 1);
 
         if (newReservation.getStartOfBooking().equals(LocalDate.now())) {
             room.setIsBusy(true);
             roomRepository.save(room);
         }
 
-        return reservationRepository.save(newReservation).toReservationResponseDto();
+        return reservationRepository.save(newReservation).toReservationDto();
     }
 
 //    @Transactional

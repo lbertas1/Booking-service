@@ -1,6 +1,7 @@
 package bartos.lukasz.bookingservice.domain.reservation.opinion;
 
 import bartos.lukasz.bookingservice.domain.reservation.opinion.dto.OpinionDto;
+import bartos.lukasz.bookingservice.domain.reservation.opinion.dto.OpinionResponseDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -16,7 +17,7 @@ import java.time.LocalDate;
 @Setter
 @Embeddable
 public class Opinion {
-    private LocalDate date;
+    private LocalDate opinionDate;
     @Column(columnDefinition = "VARCHAR(1000)")
     private String message;
     private Integer evaluation;
@@ -24,7 +25,17 @@ public class Opinion {
     public OpinionDto toOpinionDto() {
         return OpinionDto
                 .builder()
-                .date(date)
+                .opinionDate(opinionDate)
+                .evaluation(evaluation)
+                .message(message)
+                .build();
+    }
+
+    public OpinionResponseDto toOpinionResponseDto(Long reservationId) {
+        return OpinionResponseDto
+                .builder()
+                .reservationId(reservationId)
+                .opinionDate(opinionDate)
                 .evaluation(evaluation)
                 .message(message)
                 .build();

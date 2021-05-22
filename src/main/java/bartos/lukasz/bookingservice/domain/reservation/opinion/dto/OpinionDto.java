@@ -11,14 +11,14 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Builder
 public class OpinionDto {
-    private LocalDate date;
+    private LocalDate opinionDate;
     private String message;
     private Integer evaluation;
 
     public Opinion toOpinion() {
         return Opinion
                 .builder()
-                .date(date)
+                .opinionDate(opinionDate)
                 .evaluation(evaluation)
                 .message(message)
                 .build();
@@ -27,7 +27,7 @@ public class OpinionDto {
     public OpinionResponseDto toOpinionResponseDto() {
         return OpinionResponseDto
                 .builder()
-                .date(date)
+                .opinionDate(opinionDate)
                 .evaluation(evaluation)
                 .message(message)
                 .build();

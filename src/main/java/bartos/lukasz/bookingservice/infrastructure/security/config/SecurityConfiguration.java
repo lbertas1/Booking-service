@@ -50,9 +50,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers("/users/login").permitAll()
                 .antMatchers("/users/register").permitAll()
                 .antMatchers("/users/resetPassword").permitAll()
-                .antMatchers("/users/open-socket-channel").permitAll()
-                .antMatchers("/users/close-socket-channel/**").permitAll()
                 .antMatchers("/users/take-available-admins").permitAll()
+
+                .antMatchers("/chat/open-socket-channel").permitAll()
+                .antMatchers("/chat/close-socket-channel/**").permitAll()
 
                 .antMatchers("/rooms/**").permitAll()
 

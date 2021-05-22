@@ -1,11 +1,13 @@
 package bartos.lukasz.bookingservice.infrastructure.controllers;
 
 import bartos.lukasz.bookingservice.application.annotations.CoveredControllerAdvice;
+import bartos.lukasz.bookingservice.application.enums.EmailContent;
 import bartos.lukasz.bookingservice.application.enums.PaymentStatus;
 import bartos.lukasz.bookingservice.application.exception.EmailServiceException;
 import bartos.lukasz.bookingservice.application.exception.ReservationServiceException;
 import bartos.lukasz.bookingservice.application.service.dataServices.ReservationService;
 import bartos.lukasz.bookingservice.application.service.email.EmailService;
+import bartos.lukasz.bookingservice.domain.reservation.reservationDto.ReservationDto;
 import bartos.lukasz.bookingservice.domain.reservation.reservationDto.ReservationRequestDto;
 import bartos.lukasz.bookingservice.domain.reservation.reservationDto.ReservationResponseDto;
 import bartos.lukasz.bookingservice.domain.room.RoomBookingDatesProjection;
@@ -39,10 +41,15 @@ public class ReservationController {
 
     @PostMapping("/save")
     ResponseEntity<ReservationResponseDto> save(@RequestBody ReservationRequestDto reservationRequestDto) throws ReservationServiceException, EmailServiceException {
+        ReservationDto savedReservation = reservationService.save(reservationRequestDto);
 
-        ReservationResponseDto savedReservation = reservationService.save(reservationRequestDto);
-        //emailService.send(reservationDTO.getUserDto(), List.of(reservationDTO), reservationDTO.getUserDto().getEmail(), savedReservation.getReservationNumber().toString(), EmailContent.RESERVATION);
-        return ResponseEntity.status(HttpStatus.CREATED).body(savedReservation);
+        emailService
+                .send(savedReservation.getUserDto(),
+                        List.of(savedReservation),
+                        savedReservation.getReservationNumber().toString(),
+                        EmailContent.RESERVATION);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedReservation.toReservationResponseDto());
     }
 
 //    @RolesAllowed("ROLE_ADMIN")

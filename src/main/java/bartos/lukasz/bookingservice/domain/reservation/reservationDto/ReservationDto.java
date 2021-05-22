@@ -8,11 +8,12 @@ import bartos.lukasz.bookingservice.domain.user.dto.UserDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.Getter;
 
 import java.time.LocalDate;
 import java.util.Objects;
 
-@Data
+@Getter
 @AllArgsConstructor
 @Builder
 public class ReservationDto {

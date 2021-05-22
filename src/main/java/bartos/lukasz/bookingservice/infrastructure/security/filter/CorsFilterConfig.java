@@ -38,7 +38,7 @@ public class CorsFilterConfig {
 //        }
 //        corsConfiguration.setAllowedOrigins(Collections.singletonList("http://booking-frontend-lbertas1.s3-website.eu-central-1.amazonaws.com"));
 
-//	corsConfiguration.setAllowedOrigins(Collections.singletonList("amazonaws.com"));
+//        corsConfiguration.setAllowedOrigins(Collections.singletonList("amazonaws.com"));
 
         corsConfiguration.setAllowedHeaders(Arrays.asList("Origin", "Access-Control-Allow-Origin", "Content-Type",
                 "Accept", "Jwt-Token", "Authorization", "Origin, Accept", "X-Requested-With",

@@ -12,7 +12,7 @@ import java.time.LocalDate;
 public class OpinionResponseDto {
 
     private Long reservationId;
-    private LocalDate date;
+    private LocalDate opinionDate;
     private String message;
     private Integer evaluation;
 }

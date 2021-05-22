@@ -7,6 +7,7 @@ import bartos.lukasz.bookingservice.application.service.dataServices.RoomService
 import bartos.lukasz.bookingservice.application.service.dataServices.UserService;
 import bartos.lukasz.bookingservice.application.service.email.EmailPdfFileService;
 import bartos.lukasz.bookingservice.application.service.email.EmailService;
+import bartos.lukasz.bookingservice.domain.reservation.ReservationRepository;
 import bartos.lukasz.bookingservice.domain.reservation.opinion.dto.OpinionRequestDto;
 import bartos.lukasz.bookingservice.domain.reservation.reservationDto.ReservationRequestDto;
 import bartos.lukasz.bookingservice.domain.reservation.reservationDto.ReservationResponseDto;
@@ -37,12 +38,14 @@ public class CommandLine implements CommandLineRunner {
     private final EmailService emailService;
     private final EmailPdfFileService emailPdfFileService;
     private final EntityManager em;
+    private final ReservationRepository reservationRepository;
 
     @Value("${spring.profiles.active}")
     private String applicationProfile;
 
     @Override
     public void run(String... args) throws Exception {
+
 
 //        if (applicationProfile.equals("prod")) {
 //            prepareBootData();

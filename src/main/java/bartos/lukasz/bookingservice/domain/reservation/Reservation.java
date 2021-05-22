@@ -25,7 +25,6 @@ public class Reservation {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long reservationNumber;
     private LocalDate startOfBooking;
     private LocalDate endOfBooking;
@@ -43,6 +42,10 @@ public class Reservation {
 
     @Embedded
     private BookingStatus bookingStatus;
+
+    public void setReservationNumber(Long reservationNumber) {
+        this.reservationNumber = reservationNumber;
+    }
 
     public void setRoom(Room room) {
         this.room = room;

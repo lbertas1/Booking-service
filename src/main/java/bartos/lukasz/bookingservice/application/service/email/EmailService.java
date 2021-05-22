@@ -33,7 +33,7 @@ public class EmailService {
     private final EmailHtmlRegistrationContentService emailHtmlRegistrationContentService;
     private final EmailPdfFileService emailPdfFileService;
 
-    public void send(UserDto userDto, List<ReservationDto> reservationDtos, String to, String orderNumber, EmailContent emailContent) throws EmailServiceException {
+    public void send(UserDto userDto, List<ReservationDto> reservationDtos, String orderNumber, EmailContent emailContent) throws EmailServiceException {
         try {
             String content;
             readEmailPassword();
@@ -46,10 +46,10 @@ public class EmailService {
                 emailPdfFileService.createOrderPdf(userDto, reservationDtos, orderNumber);
                 String attachmentPath = getAttachmentPath(orderNumber);
                 String fileName = "order " + orderNumber + ".pdf";
-                prepareEmailMessageWithFile(mimeMessage, prepareMimeBodyPartWithFile(attachmentPath, fileName, content), to, orderNumber);
+                prepareEmailMessageWithFile(mimeMessage, prepareMimeBodyPartWithFile(attachmentPath, fileName, content), userDto.getEmail(), orderNumber);
             } else {
                 content = emailHtmlRegistrationContentService.renderHtmlContent();
-                prepareEmailMessage(mimeMessage, to, content);
+                prepareEmailMessage(mimeMessage, userDto.getEmail(), content);
             }
 
             Transport.send(mimeMessage);

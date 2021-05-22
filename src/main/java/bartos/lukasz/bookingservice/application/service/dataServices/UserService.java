@@ -16,6 +16,7 @@ import bartos.lukasz.bookingservice.domain.user.enums.Role;
 import bartos.lukasz.bookingservice.infrastructure.security.dto.MyUserPrincipal;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.checkerframework.checker.units.qual.C;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -25,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -88,53 +90,54 @@ public class UserService implements UserDetailsService {
     }
 
     public UserProfileDto getProfile(Long id) {
-        return reservationRepository
-                .findAllByUserId(id)
-                .stream()
-                .map(Reservation::toReservationDto)
-                .collect(Collectors
-                        .groupingBy(ReservationDto::getUserDto,
-                                Collectors.toCollection(ArrayList::new)))
-                .entrySet()
-                .stream()
-                .map(userDtoArrayListEntry -> {
-                    var userResponseDto = userDtoArrayListEntry.getKey().toUserResponseDto();
-                    List<SimpleReservationDto> simpleReservations = userDtoArrayListEntry
-                            .getValue()
+        Set<Reservation> allReservationsByUserId = reservationRepository.findAllByUserId(id);
+
+        if (allReservationsByUserId.isEmpty()) {
+            return UserProfileDto
+                    .builder()
+                    .user(userRepository
+                            .findById(id)
+                            .orElseThrow(() -> new ReservationServiceException("User not found", 404, HttpStatus.NOT_FOUND))
+                            .toUserResponseDto())
+                    .build();
+        } else {
+            return UserProfileDto
+                    .builder()
+                    .user(allReservationsByUserId
                             .stream()
-                            .map(reservationDto -> {
-                                var simpleReservationDto = SimpleReservationDto
-                                        .builder()
-                                        .roomNumber(reservationDto.getRoomDto().getRoomNumber())
-                                        .startOfBooking(reservationDto.getStartOfBooking().toString())
-                                        .endOfBooking(reservationDto.getEndOfBooking().toString())
-                                        .priceForNight(reservationDto.getRoomDto().getPriceForNight().toString())
-                                        .totalAmountForReservation(reservationDto.getBookingStatusDto().getTotalAmountForReservation().toString())
-                                        .paymentStatus(reservationDto.getBookingStatusDto().getPaymentStatus())
-                                        .build();
+                            .findFirst()
+                            .orElseThrow(() -> new ReservationServiceException("Reservation doesn't have an assigned user", 404, HttpStatus.NOT_FOUND))
+                            .getUser()
+                            .toUserResponseDto())
+                    .reservations(allReservationsByUserId
+                    .stream()
+                    .map(Reservation::toReservationDto)
+                    .map(reservationDto -> {
+                        var simpleReservationDto = SimpleReservationDto
+                                .builder()
+                                .reservationId(reservationDto.getId())
+                                .roomNumber(reservationDto.getRoomDto().getRoomNumber())
+                                .startOfBooking(reservationDto.getStartOfBooking().toString())
+                                .endOfBooking(reservationDto.getEndOfBooking().toString())
+                                .priceForNight(reservationDto.getRoomDto().getPriceForNight().toString())
+                                .totalAmountForReservation(reservationDto.getBookingStatusDto().getTotalAmountForReservation().toString())
+                                .paymentStatus(reservationDto.getBookingStatusDto().getPaymentStatus())
+                                .build();
 
-                                if (reservationDto.getOpinionDto() == null) {
-                                    simpleReservationDto.setOpinionDate("");
-                                    simpleReservationDto.setOpinionMessage("");
-                                    simpleReservationDto.setOpinionEvaluation("");
-                                } else {
-                                    simpleReservationDto.setOpinionDate(reservationDto.getOpinionDto().getDate().toString());
-                                    simpleReservationDto.setOpinionMessage(reservationDto.getOpinionDto().getMessage());
-                                    simpleReservationDto.setOpinionEvaluation(reservationDto.getOpinionDto().getEvaluation().toString());
-                                }
-
-                                return simpleReservationDto;
-                            })
-                            .collect(Collectors.toList());
-
-                    return UserProfileDto
-                            .builder()
-                            .user(userResponseDto)
-                            .reservations(simpleReservations)
-                            .build();
-                })
-                .findFirst()
-                .orElseThrow(() -> new ReservationServiceException("User profile with reservations not found", 404, HttpStatus.NOT_FOUND));
+                        if (reservationDto.getOpinionDto() == null) {
+                            simpleReservationDto.setOpinionDate("");
+                            simpleReservationDto.setOpinionMessage("");
+                            simpleReservationDto.setOpinionEvaluation("");
+                        } else {
+                            simpleReservationDto.setOpinionDate(reservationDto.getOpinionDto().getOpinionDate().toString());
+                            simpleReservationDto.setOpinionMessage(reservationDto.getOpinionDto().getMessage());
+                            simpleReservationDto.setOpinionEvaluation(reservationDto.getOpinionDto().getEvaluation().toString());
+                        }
+                        return simpleReservationDto;
+                    })
+                    .collect(Collectors.toList()))
+                    .build();
+        }
     }
 
     private UserDto get(Long id) {

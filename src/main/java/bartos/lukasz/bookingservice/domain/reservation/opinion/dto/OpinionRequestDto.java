@@ -6,24 +6,25 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Getter
 @AllArgsConstructor
 @Builder
 public class OpinionRequestDto {
-    private Long reservationId;
-    private LocalDate date;
+    private List<Long>reservationsId;
+    private String opinionDate;
     private String message;
     private Integer evaluation;
 
-    public void setReservationId(Long reservationId) {
-        this.reservationId = reservationId;
+    public void setReservationsId(List<Long> reservationsId) {
+        this.reservationsId = reservationsId;
     }
 
     public Opinion toOpinion() {
         return Opinion
                 .builder()
-                .date(date)
+                .opinionDate(LocalDate.parse(opinionDate))
                 .evaluation(evaluation)
                 .message(message)
                 .build();
@@ -32,7 +33,7 @@ public class OpinionRequestDto {
     public OpinionDto toOpinionDto() {
         return OpinionDto
                 .builder()
-                .date(date)
+                .opinionDate(LocalDate.parse(opinionDate))
                 .evaluation(evaluation)
                 .message(message)
                 .build();
@@ -41,7 +42,7 @@ public class OpinionRequestDto {
     public OpinionResponseDto toOpinionResponseDto() {
         return OpinionResponseDto
                 .builder()
-                .date(date)
+                .opinionDate(LocalDate.parse(opinionDate))
                 .evaluation(evaluation)
                 .message(message)
                 .build();

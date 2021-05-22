@@ -9,6 +9,7 @@ import lombok.Data;
 @Builder
 @AllArgsConstructor
 public class SimpleReservationDto {
+    private Long reservationId;
     private Integer roomNumber;
     private String startOfBooking;
     private String endOfBooking;

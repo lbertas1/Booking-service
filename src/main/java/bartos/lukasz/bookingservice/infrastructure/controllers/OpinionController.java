@@ -9,6 +9,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Slf4j
 @RestController
 @RequestMapping("/opinions")
@@ -19,14 +21,14 @@ public class OpinionController {
     private final OpinionService opinionService;
 
     @PostMapping
-    ResponseEntity<OpinionResponseDto> addOpinion(@RequestBody OpinionRequestDto opinionRequestDto) {
+    ResponseEntity<OpinionResponseDto> addOpinions(@RequestBody OpinionRequestDto opinionRequestDto) {
         return ResponseEntity.ok(opinionService.saveOpinion(opinionRequestDto));
     }
 
-    @PutMapping
-    ResponseEntity<OpinionResponseDto> updateOpinion(@RequestBody OpinionRequestDto opinionRequestDto) {
-        return ResponseEntity.ok(opinionService.updateOpinion(opinionRequestDto));
-    }
+//    @PutMapping
+//    ResponseEntity<OpinionResponseDto> updateOpinion(@RequestBody OpinionRequestDto opinionRequestDto) {
+//        return ResponseEntity.ok(opinionService.updateOpinion(opinionRequestDto));
+//    }
 
     @DeleteMapping("/{reservationId}")
     ResponseEntity<OpinionResponseDto> removeOpinion(@PathVariable Long reservationId) {
