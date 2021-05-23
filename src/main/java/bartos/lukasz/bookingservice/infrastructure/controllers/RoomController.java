@@ -38,8 +38,6 @@ public class RoomController {
             @RequestParam(required = false) String selectedEquipments,
             @RequestParam(required = false) String priceRange) {
 
-        headers.forEach((s, strings) -> log.info("\n\n\n\n\n" + s + "    " + strings.toString()));
-
         return ResponseEntity
                 .ok(roomService
                         .getRoomsByFiltersCriteria(FiltersCriteria

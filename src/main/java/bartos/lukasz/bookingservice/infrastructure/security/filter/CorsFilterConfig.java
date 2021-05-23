@@ -16,9 +16,6 @@ public class CorsFilterConfig {
     @Value("${spring.profiles.active}")
     private String applicationProfile;
 
-    // ustawić corsa na gwiazdkę Access-Control-Allow-Origin, żeby zezwalał na wartość gwiazdkę. 
-    // spróbować z tą domeną aws tutaj, co poniżej. 
-
     @Bean
     public CorsFilter corsFilter() {
         UrlBasedCorsConfigurationSource urlBasedCorsConfigurationSource = new UrlBasedCorsConfigurationSource();
@@ -27,13 +24,7 @@ public class CorsFilterConfig {
 
         if (applicationProfile.equals("dev")) {
             corsConfiguration.setAllowedOrigins(Collections.singletonList("http://localhost:4200"));
-            //corsConfiguration.setAllowedOrigins(Collections.singletonList("*"));
         } else if (applicationProfile.equals("prod")) {
-//              corsConfiguration.setAllowedOrigins(Collections.singletonList("http://booking-frontend-lbertas1.s3-website.eu-central-1.amazonaws.com"));
-            //corsConfiguration.setAllowedOrigins(Collections.singletonList("*"));
-//            corsConfiguration.setAllowedOrigins(Collections.singletonList("http://localhost:4200"));
-
-            //corsConfiguration.setAllowedOrigins(Collections.singletonList("amazonaws.com"));
             corsConfiguration.setAllowedOrigins(Collections.singletonList("http://booking-frontend-lbertas1.s3-website.eu-central-1.amazonaws.com"));
         }
 

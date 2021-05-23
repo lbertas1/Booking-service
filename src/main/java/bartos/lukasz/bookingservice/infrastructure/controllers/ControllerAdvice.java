@@ -22,11 +22,6 @@ public class ControllerAdvice {
             SocketChannelControlServiceException.class,
             UserServiceException.class})
     ResponseEntity<MyHttpResponse> globalExceptionHandler(ApplicationServiceException applicationServiceException) {
-//        if (runtimeException instanceof UserServiceException) {
-//            Integer httpResponseCode = ((UserServiceException) runtimeException).getHttpResponseCode();
-//        }
-
-        log.info("ERROR " + applicationServiceException.getMessage());
 
         return new ResponseEntity<MyHttpResponse>(MyHttpResponse
                 .builder()

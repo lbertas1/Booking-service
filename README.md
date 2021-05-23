@@ -18,7 +18,14 @@ Application generates startup data, you can use them to test the application:
   login: user2
   password: password 
 
-or you can register your own account. 
+or you can register your own account.
+
+Chat only works between the client and the admin, so you need to log into one 
+of the admin accounts above.
+
+For some reason the chat on ec2 server does not close properly, so you must log out 
+and log in again as admin to use the chat again. The problem does not occur locally, 
+it will be fixed soon.
 
 Booking-service still requires many corrections and advantages, is still being developed, 
 and this is current state.
@@ -28,7 +35,12 @@ Application allows clients to:
 2) browsing and filtering available rooms
 3) making a reservation and issuing a review for the hotel
 4) contact with the hotel staff through chat, for logged in and not logged in users.
-5) application sends e-mails confirming the booking and account registration
+5) application sends e-mails confirming the booking and account registration with pdf file. 
+
+The application is available on the ec2 server on aws. The frontend is embedded in s3. 
+The application communicates using a loadbalancer:
+
+http://booking-frontend-lbertas1.s3-website.eu-central-1.amazonaws.com/main
 
 The application backend was written in Java 15 using Spring framework and Spring Boot.
 The application frontend was written in TypeScript with Angular.
