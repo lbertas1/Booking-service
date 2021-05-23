@@ -1,6 +1,10 @@
 Booking-service is a simple application to which provides functionality 
 for both, customers and hotel staff. The app will soon be available on aws.
 
+Application frontend is available on my github under: 
+
+https://github.com/lbertas1/Booking-service-frontend
+
 Application generates startup data, you can use them to test the application:
 - admin1: 
    login: admin1
