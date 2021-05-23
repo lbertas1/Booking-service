@@ -8,14 +8,15 @@ import bartos.lukasz.bookingservice.domain.user.enums.Role;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class LoggedAdminService {
 
@@ -26,7 +27,7 @@ public class LoggedAdminService {
     public LoggedAdminService(UserRepository userRepository) {
         this.userRepository = userRepository;
 
-        Map<String, AdminAvailability> adminAvailabilityMap = userRepository
+        Map<String, AdminAvailability> adminAvailabilityMap = this.userRepository
                 .findAllByRole(Role.ROLE_ADMIN)
                 .stream()
                 .map(User::getUsername)
@@ -55,25 +56,20 @@ public class LoggedAdminService {
     }
 
     private boolean whetherUsernameIsIncluded(String username) {
-        try {
-            return loginAttemptCache.get(username) != null;
-        } catch (ExecutionException e) {
-            throw new LoggedAdminServiceException("whetherUsernameIsIncluded method error", 400, HttpStatus.BAD_REQUEST);
+        return loginAttemptCache.getIfPresent(username) != null;
+    }
+
+    public void markAdminAsUnavailable(String username) {
+        if (whetherUsernameIsIncluded(username)) {
+            loginAttemptCache.put(username, AdminAvailability.UNAVAILABLE);
         }
     }
 
-    public boolean markAdminAsUnavailable(String username) {
-        if (whetherUsernameIsIncluded(username)) {
-            loginAttemptCache.put(username, AdminAvailability.UNAVAILABLE);
-            return true;
-        } else return false;
-    }
-
-    public boolean markAdminAsAvailable(String username) {
-        if (whetherUsernameIsIncluded(username)) {
-            loginAttemptCache.put(username, AdminAvailability.AVAILABLE);
-            return true;
-        } else return false;
+    public void markAdminAsAvailable(String username) {
+        if (!whetherUsernameIsIncluded(username)) {
+            this.addUsernameToCache(username);
+        }
+        loginAttemptCache.put(username, AdminAvailability.AVAILABLE);
     }
 
     public String getFreeAdmin() {

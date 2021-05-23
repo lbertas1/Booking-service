@@ -15,7 +15,7 @@ public class CorsFilterConfig {
 
     @Value("${spring.profiles.active}")
     private String applicationProfile;
-    
+
     // ustawić corsa na gwiazdkę Access-Control-Allow-Origin, żeby zezwalał na wartość gwiazdkę. 
     // spróbować z tą domeną aws tutaj, co poniżej. 
 
@@ -25,26 +25,21 @@ public class CorsFilterConfig {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
         corsConfiguration.setAllowCredentials(true);
 
-//        if (applicationProfile.equals("dev")) {
+        if (applicationProfile.equals("dev")) {
             corsConfiguration.setAllowedOrigins(Collections.singletonList("http://localhost:4200"));
-//        } else if (applicationProfile.equals("prod")) {
-//            corsConfiguration.setAllowedOrigins(Collections.singletonList("http://18.198.24.230/"));
-//            corsConfiguration.setAllowedOrigins(Collections.singletonList("http://18.198.24.230"));
-//            corsConfiguration.setAllowedOrigins(Collections.singletonList("http://booking-frontend-lbertas1.s3-website.eu-central-1.amazonaws.com/"));
-//            corsConfiguration.setAllowedOrigins(Collections.singletonList("http://booking-frontend-lbertas1.s3-website.eu-central-1.amazonaws.com"));
-//            corsConfiguration.setAllowedOrigins(Collections.singletonList("**"));
-//
-//
-//        }
-//        corsConfiguration.setAllowedOrigins(Collections.singletonList("http://booking-frontend-lbertas1.s3-website.eu-central-1.amazonaws.com"));
+            //corsConfiguration.setAllowedOrigins(Collections.singletonList("*"));
+        } else if (applicationProfile.equals("prod")) {
+//              corsConfiguration.setAllowedOrigins(Collections.singletonList("http://booking-frontend-lbertas1.s3-website.eu-central-1.amazonaws.com"));
+            //corsConfiguration.setAllowedOrigins(Collections.singletonList("*"));
+//            corsConfiguration.setAllowedOrigins(Collections.singletonList("http://localhost:4200"));
 
-//        corsConfiguration.setAllowedOrigins(Collections.singletonList("amazonaws.com"));
+            //corsConfiguration.setAllowedOrigins(Collections.singletonList("amazonaws.com"));
+            corsConfiguration.setAllowedOrigins(Collections.singletonList("http://booking-frontend-lbertas1.s3-website.eu-central-1.amazonaws.com"));
+        }
 
         corsConfiguration.setAllowedHeaders(Arrays.asList("Origin", "Access-Control-Allow-Origin", "Content-Type",
                 "Accept", "Jwt-Token", "Authorization", "Origin, Accept", "X-Requested-With",
                 "Access-Control-Request-Method", "Access-Control-Request-Headers", "Access-Control-Allow-Methods"));
-
-//        corsConfiguration.setAllowedHeaders(Collections.singletonList("**"));
 
         corsConfiguration.setExposedHeaders(Arrays.asList("Origin", "Content-Type", "Accept", "Jwt-Token", "Authorization",
                 "Access-Control-Allow-Origin", "Access-Control-Allow-Origin", "Access-Control-Allow-Credentials"));

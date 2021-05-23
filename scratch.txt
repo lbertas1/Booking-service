@@ -1,0 +1,17 @@
+SCRATCH: 
+
+2) dotestować pozostałe rzeczy i w trybie proda czy zrobi mi te dane testowe i czat czy dalej działa
+i potem wrzucić to na aws-a i jeśli uda się naprawic te corsy to wysyłać cv.
+2.5) walidacja opinii w save w opinionService
+2.7) dodać właściwą obsługę błędów na froncie! na wszsytkich komponentach.
+3) wrzucić nowe werjse na awsa i sprawdzić roota bilings. I koniecznie, spróbować zrobić wreszcie tego aws-a
+3.5) zrobić tego gita w końcu, wrzucić aktualne zmiany i przejść na nowego brancha roboczego. i sprawdzić czy ten .gitignore będzie dobrze działać. 
+4) wysłać pytania krzychowi
+5) wysyłać CV
+6) robić teorię!
+7) uczyć się teorii
+8) spróbować wrzucić tego liquibase
+9) angielski
+10) wrzucić swagera
+11) itd. Kartka!!!
+12) dodać te animacje na elementach!

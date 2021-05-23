@@ -5,6 +5,9 @@ import bartos.lukasz.bookingservice.application.exception.EmailServiceException;
 import bartos.lukasz.bookingservice.domain.reservation.reservationDto.ReservationDto;
 import bartos.lukasz.bookingservice.domain.user.dto.UserDto;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -16,18 +19,27 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Properties;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class EmailService {
 
+    @Value("${spring.profiles.active}")
+    private String applicationProfile;
+
     private String emailAddress;
     private String emailPassword;
+
+    private final Environment environment;
 
     private final EmailHtmlReservationContentService emailHtmlReservationContentService;
     private final EmailHtmlRegistrationContentService emailHtmlRegistrationContentService;
@@ -99,7 +111,6 @@ public class EmailService {
         try {
             BodyPart mimeBodyPart1 = new MimeBodyPart();
             mimeBodyPart1.setContent(html, "text/html; charset=utf-8");
-
             MimeBodyPart mimeBodyPart2 = new MimeBodyPart();
             DataSource dataSource = new FileDataSource(path);
             mimeBodyPart2.setDataHandler(new DataHandler(dataSource));
@@ -126,15 +137,27 @@ public class EmailService {
 
     private void readEmailPassword() {
         try {
-            List<String> strings = Files.readAllLines(Path.of("poczta.txt"));
-            emailAddress = strings.get(0);
-            emailPassword = strings.get(1);
+            if (applicationProfile.equals("dev")) {
+                List<String> strings = Files.readAllLines(Path.of("poczta.txt"));
+                emailAddress = strings.get(0);
+                emailPassword = strings.get(1);
+            } else if (applicationProfile.equals("prod")) {
+                emailAddress = environment.getProperty("email.address");
+                emailPassword = environment.getProperty("email.password");
+            }
+
         } catch (IOException e) {
             e.printStackTrace();
+            throw new EmailServiceException("NOW SUCH FILE EXCEPTION!   ", 500, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     private String getAttachmentPath(String orderNumber) {
-        return "src/main/resources/pdf/order " + orderNumber + ".pdf";
+        if (applicationProfile.equals("dev")) {
+            return "src/main/resources/pdf/order " + orderNumber + ".pdf";
+        } else {
+            String pathToOrdersDirectory = new File(System.getProperty("java.class.path")).getAbsoluteFile().getParentFile().getPath() + "/resources-orders";
+            return pathToOrdersDirectory + "/order " + orderNumber + ".pdf";
+        }
     }
 }

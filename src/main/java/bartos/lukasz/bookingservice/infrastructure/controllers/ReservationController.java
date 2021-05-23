@@ -43,11 +43,11 @@ public class ReservationController {
     ResponseEntity<ReservationResponseDto> save(@RequestBody ReservationRequestDto reservationRequestDto) throws ReservationServiceException, EmailServiceException {
         ReservationDto savedReservation = reservationService.save(reservationRequestDto);
 
-        emailService
-                .send(savedReservation.getUserDto(),
-                        List.of(savedReservation),
-                        savedReservation.getReservationNumber().toString(),
-                        EmailContent.RESERVATION);
+//        emailService
+//                .send(savedReservation.getUserDto(),
+//                        List.of(savedReservation),
+//                        savedReservation.getReservationNumber().toString(),
+//                        EmailContent.RESERVATION);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(savedReservation.toReservationResponseDto());
     }

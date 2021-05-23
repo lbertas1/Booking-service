@@ -9,6 +9,8 @@ import com.itextpdf.text.pdf.BarcodeQRCode;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -16,14 +18,21 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.net.URL;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class EmailPdfFileService {
+
+    @Value("${spring.profiles.active}")
+    private String applicationProfile;
 
     public void createOrderPdf(UserDto userDto, List<ReservationDto> reservationsDto, String orderNumber) {
         Rectangle page = new Rectangle(PageSize.A4);
@@ -31,8 +40,7 @@ public class EmailPdfFileService {
         Document order = new Document(page);
 
         try {
-            Files.deleteIfExists(Paths.get("src/main/resources/pdf/order " + orderNumber + ".pdf"));
-            PdfWriter.getInstance(order, new FileOutputStream(new File("src/main/resources/pdf/order " + orderNumber + ".pdf")));
+            PdfWriter.getInstance(order, new FileOutputStream(prepareFile(orderNumber)));
 
             order.open();
 
@@ -86,6 +94,24 @@ public class EmailPdfFileService {
         } catch (DocumentException | IOException | EmailServiceException e) {
             e.printStackTrace();
         }
+    }
+
+    private String prepareFile(String orderNumber) throws IOException {
+        String pathToOrdersFile = null;
+        String pathToOrdersDirectory = null;
+
+        if (applicationProfile.equals("dev")) {
+            pathToOrdersFile = "src/main/resources/pdf/order " + orderNumber + ".pdf";
+        } else {
+            pathToOrdersDirectory = new File(System.getProperty("java.class.path")).getAbsoluteFile().getParentFile().getPath() + "/resources-orders";
+            pathToOrdersFile = pathToOrdersDirectory + "/order " + orderNumber + ".pdf";
+
+            if (!Files.exists(Path.of(pathToOrdersDirectory))) Files.createDirectory(Path.of(pathToOrdersDirectory));
+        }
+        Files.deleteIfExists(Paths.get(pathToOrdersFile));
+        Files.createFile(Paths.get(pathToOrdersFile));
+
+        return pathToOrdersFile;
     }
 
     private String countTotalAmount(java.util.List<ReservationDto> reservationDtoList) throws EmailServiceException {
@@ -222,7 +248,7 @@ public class EmailPdfFileService {
         String qrCodeMessageReservation = reservationDtos
                 .stream()
                 .map(reservationDtoLongEntry -> "\nRESERVATION " + counter.incrementAndGet() + ": room number: " + reservationDtoLongEntry.getRoomDto().getRoomNumber()
-                + " start of booking: " + reservationDtoLongEntry.getStartOfBooking() + " end of booking " + reservationDtoLongEntry.getEndOfBooking() +
+                        + " start of booking: " + reservationDtoLongEntry.getStartOfBooking() + " end of booking " + reservationDtoLongEntry.getEndOfBooking() +
                         " is paid " + reservationDtoLongEntry.getBookingStatusDto().getPaymentStatus() + " reservation cost: " + reservationDtoLongEntry.getBookingStatusDto().getTotalAmountForReservation())
                 .collect(Collectors.joining());
 

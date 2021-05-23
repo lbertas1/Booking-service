@@ -10,6 +10,8 @@ import bartos.lukasz.bookingservice.application.service.ChatService;
 import bartos.lukasz.bookingservice.application.service.LoggedAdminService;
 import bartos.lukasz.bookingservice.application.service.dataServices.UserService;
 import bartos.lukasz.bookingservice.application.service.email.EmailService;
+import bartos.lukasz.bookingservice.domain.user.User;
+import bartos.lukasz.bookingservice.domain.user.UserRepository;
 import bartos.lukasz.bookingservice.domain.user.dto.*;
 import bartos.lukasz.bookingservice.domain.user.enums.Role;
 import bartos.lukasz.bookingservice.infrastructure.security.dto.AccessDto;
@@ -28,6 +30,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.security.RolesAllowed;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.springframework.http.HttpStatus.ACCEPTED;
 import static org.springframework.http.HttpStatus.OK;
@@ -42,8 +45,6 @@ public class UserController {
     private final AuthenticationManager authenticationManager;
     private final UserService userService;
     private final JwtTokenProvider tokenProvider;
-    private final EmailService emailService;
-    private final ChatService chatService;
     private final ApplicationEventPublisher applicationEventPublisher;
 
     @PostMapping("/login")

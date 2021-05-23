@@ -40,7 +40,6 @@ public class ChatController {
     public ResponseEntity<SocketChannelVariables> closeChat(
             @PathVariable String identifier
     ) {
-
         if (chatService.isAdminIdentifier(identifier)) {
             loggedAdminService.markAdminAsAvailable(identifier);
             simpMessageSendingOperations.convertAndSend("/topic/chat/" + socketChannelControlService.get(identifier), ChatConstants.SERVICE_MESSAGE_CHAT_HAS_BEEN_CLOSED.name());
