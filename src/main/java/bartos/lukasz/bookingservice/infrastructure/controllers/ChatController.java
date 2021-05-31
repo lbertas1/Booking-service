@@ -6,6 +6,8 @@ import bartos.lukasz.bookingservice.application.enums.ChatConstants;
 import bartos.lukasz.bookingservice.application.service.ChatService;
 import bartos.lukasz.bookingservice.application.service.LoggedAdminService;
 import bartos.lukasz.bookingservice.application.service.SocketChannelControlService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/chat")
 @RequiredArgsConstructor
 @CoveredControllerAdvice
+@Api(value = "/users")
 public class ChatController {
 
     private final SocketChannelControlService socketChannelControlService;
@@ -24,6 +27,8 @@ public class ChatController {
     private final ChatService chatService;
     private final LoggedAdminService loggedAdminService;
 
+    @ApiOperation(value = """
+            Method to open the chat. Returns the IDs of both sides.""")
     @PostMapping("/open-socket-channel")
     public ResponseEntity<SocketChannelVariables> chatStart(
             @RequestBody SocketChannelVariables socketChannelVariables
@@ -36,6 +41,8 @@ public class ChatController {
         return ResponseEntity.ok(socketChannelVariables);
     }
 
+    @ApiOperation(value = """
+            Method to close the chat. Returns the IDs of both sides.""")
     @PostMapping("/close-socket-channel/{identifier}")
     public ResponseEntity<SocketChannelVariables> closeChat(
             @PathVariable String identifier

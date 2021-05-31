@@ -2,6 +2,7 @@ package bartos.lukasz.bookingservice.domain.reservation.bookingStatus;
 
 import bartos.lukasz.bookingservice.application.enums.PaymentStatus;
 import bartos.lukasz.bookingservice.domain.reservation.bookingStatus.dto.BookingStatusDto;
+import io.swagger.annotations.ApiModel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

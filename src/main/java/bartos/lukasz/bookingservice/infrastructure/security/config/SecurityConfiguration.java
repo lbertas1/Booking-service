@@ -55,6 +55,12 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers("/chat/open-socket-channel").permitAll()
                 .antMatchers("/chat/close-socket-channel/**").permitAll()
 
+                .antMatchers("/v2/api-docs").permitAll()
+                .antMatchers("/swagger-ui.html").permitAll()
+                .antMatchers("/swagger-resources/**").permitAll()
+                .antMatchers("/webjars/**").permitAll()
+                .antMatchers("/swagger.json").permitAll()
+
                 .antMatchers("/rooms/**").permitAll()
 
                 .antMatchers("/reservations/room-booking-dates/**").permitAll()

@@ -1,4 +1,4 @@
-package bartos.lukasz.bookingservice.infrastructure.controllers;
+package bartos.lukasz.bookingservice.infrastructure.controllers.advice;
 
 import bartos.lukasz.bookingservice.application.annotations.CoveredControllerAdvice;
 import bartos.lukasz.bookingservice.application.dto.MyHttpResponse;
@@ -22,7 +22,6 @@ public class ControllerAdvice {
             SocketChannelControlServiceException.class,
             UserServiceException.class})
     ResponseEntity<MyHttpResponse> globalExceptionHandler(ApplicationServiceException applicationServiceException) {
-
         return new ResponseEntity<MyHttpResponse>(MyHttpResponse
                 .builder()
                 .dateTime(LocalDateTime.now())

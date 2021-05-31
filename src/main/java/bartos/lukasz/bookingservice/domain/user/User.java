@@ -4,6 +4,8 @@ import bartos.lukasz.bookingservice.domain.user.dto.UpdateUserDto;
 import bartos.lukasz.bookingservice.domain.user.dto.UserDto;
 import bartos.lukasz.bookingservice.domain.user.dto.UserResponseDto;
 import bartos.lukasz.bookingservice.domain.user.enums.Role;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
@@ -21,6 +23,7 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
+
     private String username;
     private String password;
     private String name;

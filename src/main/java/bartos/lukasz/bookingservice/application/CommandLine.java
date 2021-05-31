@@ -13,6 +13,7 @@ import bartos.lukasz.bookingservice.domain.reservation.opinion.dto.OpinionReques
 import bartos.lukasz.bookingservice.domain.reservation.reservationDto.ReservationRequestDto;
 import bartos.lukasz.bookingservice.domain.reservation.reservationDto.ReservationResponseDto;
 import bartos.lukasz.bookingservice.domain.room.dto.RoomDto;
+import bartos.lukasz.bookingservice.domain.user.User;
 import bartos.lukasz.bookingservice.domain.user.dto.RegisterUserDto;
 import bartos.lukasz.bookingservice.domain.user.dto.UserResponseDto;
 import lombok.RequiredArgsConstructor;

@@ -6,6 +6,8 @@ import bartos.lukasz.bookingservice.domain.reservation.reservationDto.Reservatio
 import bartos.lukasz.bookingservice.domain.reservation.reservationDto.ReservationResponseDto;
 import bartos.lukasz.bookingservice.domain.room.Room;
 import bartos.lukasz.bookingservice.domain.user.User;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
@@ -94,4 +96,3 @@ public class Reservation {
         return reservationResponseDto;
     }
 }
-

@@ -45,7 +45,10 @@ public class RoomService {
     @Transactional
     public RoomDto save(RoomDto roomDto) {
         validateRoomRequest(roomDto);
-        return roomRepository.save(roomDto.toRoom()).toRoomDto();
+        return roomRepository
+                .save(roomDto
+                        .toRoom())
+                .toRoomDto();
     }
 
     @Transactional

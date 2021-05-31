@@ -203,7 +203,7 @@ public class UserService implements UserDetailsService {
 
     private void validateEmail(String email) throws UserServiceException {
         if (Objects.isNull(email) || email.isEmpty())
-            throw new UserServiceException("Given email already exists", 400, HttpStatus.BAD_REQUEST);
+            throw new UserServiceException("Given email is null", 400, HttpStatus.BAD_REQUEST);
         if (userRepository.findByEmail(email).isPresent())
             throw new UserServiceException("Given email already exists", 400, HttpStatus.BAD_REQUEST);
     }

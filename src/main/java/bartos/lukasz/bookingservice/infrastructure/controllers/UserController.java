@@ -18,6 +18,8 @@ import bartos.lukasz.bookingservice.infrastructure.security.dto.AccessDto;
 import bartos.lukasz.bookingservice.infrastructure.security.dto.Identity;
 import bartos.lukasz.bookingservice.infrastructure.security.dto.MyUserPrincipal;
 import bartos.lukasz.bookingservice.infrastructure.security.tokens.JwtTokenProvider;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
@@ -40,6 +42,7 @@ import static org.springframework.http.HttpStatus.OK;
 @RequestMapping("/users")
 @RequiredArgsConstructor
 @CoveredControllerAdvice
+@Api(value = "/users")
 public class UserController {
 
     private final AuthenticationManager authenticationManager;
@@ -47,6 +50,7 @@ public class UserController {
     private final JwtTokenProvider tokenProvider;
     private final ApplicationEventPublisher applicationEventPublisher;
 
+    @ApiOperation(value = "Returns identity object after correct user login.")
     @PostMapping("/login")
     public ResponseEntity<Identity> login(@RequestBody AccessDto accessDto) throws UserServiceException, EmailServiceException {
         UserDto user = userService.getUserDtoByUsername(accessDto.getUsername());
@@ -75,6 +79,7 @@ public class UserController {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
     }
 
+    @ApiOperation(value = "Returns identity object after correct user log out.")
     @PostMapping("/log-out")
     public ResponseEntity<Identity> logout(@RequestBody Identity identity) {
         if (identity.getRole().equals(Role.ROLE_ADMIN)) {
@@ -84,50 +89,68 @@ public class UserController {
         return ResponseEntity.accepted().body(identity);
     }
 
+    @ApiOperation(value = "Returns UserResponseDto object after correct register new account.")
     @PostMapping("/register")
     public ResponseEntity<UserResponseDto> register(@RequestBody RegisterUserDto registerUserDto) throws UserServiceException {
         //emailService.send(user, null, user.getEmail(), null, EmailContent.REGISTRATION);
         return new ResponseEntity<>(userService.save(registerUserDto), OK);
     }
 
+    @ApiOperation(value = "Returns UserResponseDto object based on the obtained id.")
     @GetMapping("/get-user/{id}")
     ResponseEntity<UserResponseDto> getProfile(@PathVariable Long id) throws UserServiceException {
         return ResponseEntity.status(ACCEPTED).body(userService.findById(id));
     }
 
+    @ApiOperation(value = """
+            Returns UserProfileDto object based on the obtained id.
+            Contains all information about the user, as well as about his bookings, added opinions and used promotions.""")
     @GetMapping("/profile/{userId}")
     ResponseEntity<UserProfileDto> getFullProfile(@PathVariable Long userId) {
         return ResponseEntity.ok(userService.getProfile(userId));
     }
 
+    @ApiOperation(value = """
+            Returns UserResponseDto object after saving new user.
+            Method available only for admin.""")
     @RolesAllowed("ROLE_ADMIN")
     @PostMapping("/save")
     ResponseEntity<UserResponseDto> saveNewUser(@RequestBody RegisterUserDto registerUserDto) throws UserServiceException {
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.save(registerUserDto));
     }
 
+    @ApiOperation(value = """
+            Returns UpdateUserDto object after the user account has been updated correctly.""")
     @PutMapping("/update")
     ResponseEntity<UpdateUserDto> updateUser(@RequestBody UpdateUserDto updateUserDto) throws UserServiceException {
         return ResponseEntity.status(ACCEPTED).body(userService.update(updateUserDto));
     }
 
+    @ApiOperation(value = """
+            Returns UserResponseDto object after removing account. Only for admin.""")
     @RolesAllowed("ROLE_ADMIN")
     @DeleteMapping("/remove/{userId}")
     ResponseEntity<UserResponseDto> removeUser(@PathVariable Long userId) {
         return ResponseEntity.status(ACCEPTED).body(userService.remove(userId));
     }
 
+    @ApiOperation(value = """
+            Returns user id after correct password change.""")
     @PostMapping("/change-password")
     ResponseEntity<Long> changePassword(@RequestBody ChangePasswordDto changePasswordDto) throws UserServiceException {
         return new ResponseEntity<>(userService.changePassword(changePasswordDto), ACCEPTED);
     }
 
+    @ApiOperation(value = """
+            Returns UserResponseDto after changing the role. Only for admin.""")
     @RolesAllowed("ROLE_ADMIN")
     @PostMapping("/change-role")
     ResponseEntity<UserResponseDto> changeRoleOnAdmin(@RequestBody AccessDto accessDto) throws UserServiceException {
         return new ResponseEntity<>(userService.changeRoleOnAdmin(accessDto.getUsername()), ACCEPTED);
     }
 
+    @ApiOperation(value = """
+            Returns the list of available admins in the form of CityAdminData list when user wants to chat.""")
     @GetMapping("/take-available-admins")
     ResponseEntity<List<CityAdminData>> getAvailableAdmins() {
         return new ResponseEntity<>(userService.getAvailableAdmins(), ACCEPTED);

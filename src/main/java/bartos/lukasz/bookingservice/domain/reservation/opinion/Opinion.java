@@ -2,6 +2,7 @@ package bartos.lukasz.bookingservice.domain.reservation.opinion;
 
 import bartos.lukasz.bookingservice.domain.reservation.opinion.dto.OpinionDto;
 import bartos.lukasz.bookingservice.domain.reservation.opinion.dto.OpinionResponseDto;
+import io.swagger.annotations.ApiModel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

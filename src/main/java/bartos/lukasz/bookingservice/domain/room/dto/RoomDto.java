@@ -2,6 +2,7 @@ package bartos.lukasz.bookingservice.domain.room.dto;
 
 import bartos.lukasz.bookingservice.application.enums.Equipments;
 import bartos.lukasz.bookingservice.domain.room.Room;
+import io.swagger.annotations.ApiModel;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -11,6 +12,10 @@ import java.util.stream.Collectors;
 @Getter
 @Builder
 @AllArgsConstructor
+@ApiModel(
+        value = "Room",
+        description = "Object representing a hotel room."
+)
 public class RoomDto {
 
     private Long id;

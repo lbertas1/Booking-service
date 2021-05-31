@@ -5,6 +5,8 @@ import bartos.lukasz.bookingservice.application.dto.FiltersCriteria;
 import bartos.lukasz.bookingservice.application.exception.RoomServiceException;
 import bartos.lukasz.bookingservice.application.service.dataServices.RoomService;
 import bartos.lukasz.bookingservice.domain.room.dto.RoomDto;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -20,15 +22,20 @@ import java.util.List;
 @RequestMapping("/rooms")
 @RequiredArgsConstructor
 @CoveredControllerAdvice
+@Api(value = "/rooms")
 public class RoomController {
 
     private final RoomService roomService;
 
+    @ApiOperation(value = """
+            Returns RoomDto object by id.""")
     @GetMapping("/{id}")
     ResponseEntity<RoomDto> getRoomById(@PathVariable("id") Long id) throws RoomServiceException {
         return ResponseEntity.ok(roomService.get(id));
     }
 
+    @ApiOperation(value = """
+            Returns list of RoomDto objects based on the parameters sent.""")
     @GetMapping("/filtered-rooms")
     ResponseEntity<List<RoomDto>> getRoomsByFilters(
             @RequestHeader MultiValueMap<String, String> headers,

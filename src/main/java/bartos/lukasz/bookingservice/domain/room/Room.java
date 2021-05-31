@@ -2,6 +2,7 @@ package bartos.lukasz.bookingservice.domain.room;
 
 import bartos.lukasz.bookingservice.application.enums.Equipments;
 import bartos.lukasz.bookingservice.domain.room.dto.RoomDto;
+import io.swagger.annotations.ApiModel;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;

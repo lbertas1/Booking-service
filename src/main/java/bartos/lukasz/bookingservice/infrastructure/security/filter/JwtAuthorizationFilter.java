@@ -17,7 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 
-import static bartos.lukasz.bookingservice.infrastructure.security.SecurityConstant.TOKEN_PREFIX;
+import static bartos.lukasz.bookingservice.infrastructure.security.SecurityConstant.*;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 @Component

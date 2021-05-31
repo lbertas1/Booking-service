@@ -1,6 +1,7 @@
 package bartos.lukasz.bookingservice.domain.user.dto;
 
 import bartos.lukasz.bookingservice.domain.user.enums.Role;
+import io.swagger.annotations.ApiModel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -8,6 +9,10 @@ import lombok.Getter;
 @Getter
 @Builder
 @AllArgsConstructor
+@ApiModel(
+        value = "UserResponseDto",
+        description = "Object representing the users, both the customer and the hotel staff."
+)
 public class UserResponseDto {
     private Long id;
     private String username;
