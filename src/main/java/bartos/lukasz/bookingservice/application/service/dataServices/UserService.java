@@ -1,13 +1,13 @@
 package bartos.lukasz.bookingservice.application.service.dataServices;
 
 import bartos.lukasz.bookingservice.application.dto.CityAdminData;
+import bartos.lukasz.bookingservice.application.dto.events.RegistrationEmailData;
 import bartos.lukasz.bookingservice.application.exception.ReservationServiceException;
 import bartos.lukasz.bookingservice.application.exception.UserServiceException;
 import bartos.lukasz.bookingservice.application.service.LoggedAdminService;
 import bartos.lukasz.bookingservice.application.service.LoginAttemptService;
 import bartos.lukasz.bookingservice.domain.reservation.Reservation;
 import bartos.lukasz.bookingservice.domain.reservation.ReservationRepository;
-import bartos.lukasz.bookingservice.domain.reservation.reservationDto.ReservationDto;
 import bartos.lukasz.bookingservice.domain.reservation.reservationDto.SimpleReservationDto;
 import bartos.lukasz.bookingservice.domain.user.User;
 import bartos.lukasz.bookingservice.domain.user.UserRepository;
@@ -16,7 +16,7 @@ import bartos.lukasz.bookingservice.domain.user.enums.Role;
 import bartos.lukasz.bookingservice.infrastructure.security.dto.MyUserPrincipal;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.checkerframework.checker.units.qual.C;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -26,7 +26,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -39,6 +38,7 @@ public class UserService implements UserDetailsService {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final LoginAttemptService loginAttemptService;
     private final LoggedAdminService loggedAdminService;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UserServiceException {
@@ -64,6 +64,11 @@ public class UserService implements UserDetailsService {
         userDto.setPassword(encodePassword(registerUserDto.getPassword()));
         userDto.setIsNotLocked(true);
         userDto.setRole(Role.ROLE_USER);
+
+        applicationEventPublisher.publishEvent(RegistrationEmailData
+                .builder()
+                .recipient(registerUserDto.getEmail())
+                .build());
 
         return userRepository.save(userDto.toUser()).toUserResponseDto();
     }
@@ -110,32 +115,32 @@ public class UserService implements UserDetailsService {
                             .getUser()
                             .toUserResponseDto())
                     .reservations(allReservationsByUserId
-                    .stream()
-                    .map(Reservation::toReservationDto)
-                    .map(reservationDto -> {
-                        var simpleReservationDto = SimpleReservationDto
-                                .builder()
-                                .reservationId(reservationDto.getId())
-                                .roomNumber(reservationDto.getRoomDto().getRoomNumber())
-                                .startOfBooking(reservationDto.getStartOfBooking().toString())
-                                .endOfBooking(reservationDto.getEndOfBooking().toString())
-                                .priceForNight(reservationDto.getRoomDto().getPriceForNight().toString())
-                                .totalAmountForReservation(reservationDto.getBookingStatusDto().getTotalAmountForReservation().toString())
-                                .paymentStatus(reservationDto.getBookingStatusDto().getPaymentStatus())
-                                .build();
+                            .stream()
+                            .map(Reservation::toReservationDto)
+                            .map(reservationDto -> {
+                                var simpleReservationDto = SimpleReservationDto
+                                        .builder()
+                                        .reservationId(reservationDto.getId())
+                                        .roomNumber(reservationDto.getRoomDto().getRoomNumber())
+                                        .startOfBooking(reservationDto.getStartOfBooking().toString())
+                                        .endOfBooking(reservationDto.getEndOfBooking().toString())
+                                        .priceForNight(reservationDto.getRoomDto().getPriceForNight().toString())
+                                        .totalAmountForReservation(reservationDto.getBookingStatusDto().getTotalAmountForReservation().toString())
+                                        .paymentStatus(reservationDto.getBookingStatusDto().getPaymentStatus())
+                                        .build();
 
-                        if (reservationDto.getOpinionDto() == null) {
-                            simpleReservationDto.setOpinionDate("");
-                            simpleReservationDto.setOpinionMessage("");
-                            simpleReservationDto.setOpinionEvaluation("");
-                        } else {
-                            simpleReservationDto.setOpinionDate(reservationDto.getOpinionDto().getOpinionDate().toString());
-                            simpleReservationDto.setOpinionMessage(reservationDto.getOpinionDto().getMessage());
-                            simpleReservationDto.setOpinionEvaluation(reservationDto.getOpinionDto().getEvaluation().toString());
-                        }
-                        return simpleReservationDto;
-                    })
-                    .collect(Collectors.toList()))
+                                if (reservationDto.getOpinionDto() == null) {
+                                    simpleReservationDto.setOpinionDate("");
+                                    simpleReservationDto.setOpinionMessage("");
+                                    simpleReservationDto.setOpinionEvaluation("");
+                                } else {
+                                    simpleReservationDto.setOpinionDate(reservationDto.getOpinionDto().getOpinionDate().toString());
+                                    simpleReservationDto.setOpinionMessage(reservationDto.getOpinionDto().getMessage());
+                                    simpleReservationDto.setOpinionEvaluation(reservationDto.getOpinionDto().getEvaluation().toString());
+                                }
+                                return simpleReservationDto;
+                            })
+                            .collect(Collectors.toList()))
                     .build();
         }
     }
@@ -186,7 +191,7 @@ public class UserService implements UserDetailsService {
     private void validateLoginAttempt(UserDto userDTO) {
         if (userDTO.getIsNotLocked()) {
             userDTO.setIsNotLocked(!loginAttemptService.hasExceededMaxAttempts(userDTO.getUsername()));
-        } else loginAttemptService.evictUserFromLoginAttemptCache(userDTO.getUsername());
+        } else loginAttemptService.eraseUserFromLoginAttemptCache(userDTO.getUsername());
     }
 
     public UserDto getUserDtoByUsername(String username) throws UserServiceException {

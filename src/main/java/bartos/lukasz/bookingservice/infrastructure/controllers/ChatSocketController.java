@@ -1,5 +1,7 @@
 package bartos.lukasz.bookingservice.infrastructure.controllers;
 
+import bartos.lukasz.bookingservice.application.enums.ChatConstants;
+import bartos.lukasz.bookingservice.application.enums.RedisConstants;
 import bartos.lukasz.bookingservice.application.service.SocketChannelControlService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -26,8 +28,14 @@ public class ChatSocketController {
             @DestinationVariable("sender") String sender,
             String message
     ) {
+        String recipient = null;
 
-        String recipient = socketChannelControlService.get(sender);
+        if (sender.startsWith(ChatConstants.USER_.name())) {
+            recipient = socketChannelControlService.get(RedisConstants.USER_IDENTIFIER.name() + ":" + sender.split("_")[1]).split(":")[1];
+        } else {
+            recipient = socketChannelControlService.get(RedisConstants.ADMIN_IDENTIFIER.name() + ":" + sender).split(":")[1];
+        }
+
         simpMessageSendingOperations.convertAndSend("/topic/chat/" + recipient, message);
     }
 }

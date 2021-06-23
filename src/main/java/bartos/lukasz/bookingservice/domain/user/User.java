@@ -28,6 +28,7 @@ public class User {
     private String password;
     private String name;
     private String surname;
+    //DateOfBirth
     private LocalDate birthday;
     private String email;
     private String phone;

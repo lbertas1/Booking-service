@@ -6,16 +6,13 @@ import bartos.lukasz.bookingservice.application.event.AdminLogOutEvent;
 import bartos.lukasz.bookingservice.application.exception.EmailServiceException;
 import bartos.lukasz.bookingservice.application.exception.UserServiceException;
 import bartos.lukasz.bookingservice.application.event.AdminLoginEvent;
-import bartos.lukasz.bookingservice.application.service.ChatService;
-import bartos.lukasz.bookingservice.application.service.LoggedAdminService;
+import bartos.lukasz.bookingservice.application.service.HotelReportGenerator;
 import bartos.lukasz.bookingservice.application.service.dataServices.UserService;
-import bartos.lukasz.bookingservice.application.service.email.EmailService;
-import bartos.lukasz.bookingservice.domain.user.User;
-import bartos.lukasz.bookingservice.domain.user.UserRepository;
 import bartos.lukasz.bookingservice.domain.user.dto.*;
 import bartos.lukasz.bookingservice.domain.user.enums.Role;
 import bartos.lukasz.bookingservice.infrastructure.security.dto.AccessDto;
-import bartos.lukasz.bookingservice.infrastructure.security.dto.Identity;
+import bartos.lukasz.bookingservice.infrastructure.security.dto.AdminIdentity;
+import bartos.lukasz.bookingservice.infrastructure.security.dto.UserIdentity;
 import bartos.lukasz.bookingservice.infrastructure.security.dto.MyUserPrincipal;
 import bartos.lukasz.bookingservice.infrastructure.security.tokens.JwtTokenProvider;
 import io.swagger.annotations.Api;
@@ -25,14 +22,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.security.RolesAllowed;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.springframework.http.HttpStatus.ACCEPTED;
 import static org.springframework.http.HttpStatus.OK;
@@ -49,44 +44,51 @@ public class UserController {
     private final UserService userService;
     private final JwtTokenProvider tokenProvider;
     private final ApplicationEventPublisher applicationEventPublisher;
+    private final HotelReportGenerator hotelReportGenerator;
 
-    @ApiOperation(value = "Returns identity object after correct user login.")
+    @ApiOperation(value = "Returns UserIdentity or AdminIdentity object after correct login.")
     @PostMapping("/login")
-    public ResponseEntity<Identity> login(@RequestBody AccessDto accessDto) throws UserServiceException, EmailServiceException {
+    public ResponseEntity<UserIdentity> login(@RequestBody AccessDto accessDto) throws UserServiceException, EmailServiceException {
         UserDto user = userService.getUserDtoByUsername(accessDto.getUsername());
         authenticate(accessDto.getUsername(), accessDto.getPassword());
         MyUserPrincipal myUserPrincipal = new MyUserPrincipal(user);
         String token = tokenProvider.generateJwtToken(myUserPrincipal);
 
-        Identity identity = Identity
-                .builder()
-                .id(user.getId())
-                .name(user.getName())
-                .surname(user.getSurname())
-                .username(user.getUsername())
-                .role(user.getRole())
-                .token(token)
-                .build();
+        if (user.getRole().equals(Role.ROLE_USER)) {
+            return new ResponseEntity<>(UserIdentity
+                    .builder()
+                    .id(user.getId())
+                    .name(user.getName())
+                    .surname(user.getSurname())
+                    .username(user.getUsername())
+                    .role(user.getRole())
+                    .token(token)
+                    .build(), OK);
+        } else {
+            this.applicationEventPublisher.publishEvent(new AdminLoginEvent(this, user.getUsername()));
+            AdminIdentity adminIdentity = AdminIdentity
+                    .builder()
+                    .id(user.getId())
+                    .name(user.getName())
+                    .surname(user.getSurname())
+                    .username(user.getUsername())
+                    .role(user.getRole())
+                    .token(token)
+                    .build();
 
-        if (identity.getRole().equals(Role.ROLE_ADMIN)) {
-            this.applicationEventPublisher.publishEvent(new AdminLoginEvent(this, identity.getUsername()));
+            return new ResponseEntity<>(hotelReportGenerator.generateReport(adminIdentity), OK);
         }
-
-        return new ResponseEntity<>(identity, OK);
     }
 
     private void authenticate(String username, String password) {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
     }
 
-    @ApiOperation(value = "Returns identity object after correct user log out.")
+    @ApiOperation(value = "Returns identity object after correct log out.")
     @PostMapping("/log-out")
-    public ResponseEntity<Identity> logout(@RequestBody Identity identity) {
-        if (identity.getRole().equals(Role.ROLE_ADMIN)) {
-            this.applicationEventPublisher.publishEvent(new AdminLogOutEvent(this, identity.getUsername()));
-        }
-
-        return ResponseEntity.accepted().body(identity);
+    public ResponseEntity<UserIdentity> logout(@RequestBody UserIdentity userIdentity) {
+        this.applicationEventPublisher.publishEvent(new AdminLogOutEvent(this, userIdentity.getUsername()));
+        return ResponseEntity.accepted().body(userIdentity);
     }
 
     @ApiOperation(value = "Returns UserResponseDto object after correct register new account.")

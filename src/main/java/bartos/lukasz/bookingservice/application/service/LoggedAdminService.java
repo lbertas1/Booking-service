@@ -1,99 +1,127 @@
 package bartos.lukasz.bookingservice.application.service;
 
-import bartos.lukasz.bookingservice.application.exception.LoggedAdminServiceException;
+import bartos.lukasz.bookingservice.application.cache.RedisCache;
+import bartos.lukasz.bookingservice.application.enums.RedisConstants;
 import bartos.lukasz.bookingservice.domain.user.User;
 import bartos.lukasz.bookingservice.domain.user.UserRepository;
 import bartos.lukasz.bookingservice.domain.user.enums.AdminAvailability;
 import bartos.lukasz.bookingservice.domain.user.enums.Role;
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Slf4j
 @Service
+@AllArgsConstructor
 public class LoggedAdminService {
 
     private final UserRepository userRepository;
 
-    private LoadingCache<String, AdminAvailability> loginAttemptCache;
+    private final RedisCache redisCache;
 
-    public LoggedAdminService(UserRepository userRepository) {
-        this.userRepository = userRepository;
-
-        Map<String, AdminAvailability> adminAvailabilityMap = this.userRepository
+    @PostConstruct
+    private void loadAdmins() {
+        this.userRepository
                 .findAllByRole(Role.ROLE_ADMIN)
                 .stream()
                 .map(User::getUsername)
-                .collect(Collectors.toMap(
-                        username -> username,
-                        username -> AdminAvailability.UNAVAILABLE
-                ));
-
-        loginAttemptCache = CacheBuilder
-                .newBuilder()
-                .build(new CacheLoader<String, AdminAvailability>() {
-                    @Override
-                    public AdminAvailability load(String s) throws Exception {
-                        return null;
-                    }
-                });
-
-        loginAttemptCache.putAll(adminAvailabilityMap);
+                .forEach(adminUsername ->
+                        this.redisCache
+                                .setnx(RedisConstants.ADMIN_USERNAME_CHAT.name() + ":" + adminUsername,
+                                        AdminAvailability.UNAVAILABLE.name()));
     }
+
+    //    private LoadingCache<String, AdminAvailability> loginAttemptCache;
+
+//    public LoggedAdminService(UserRepository userRepository) {
+//        this.userRepository = userRepository;
+//
+//
+//
+//
+////        Map<String, AdminAvailability> adminAvailabilityMap = this.userRepository
+////                .findAllByRole(Role.ROLE_ADMIN)
+////                .stream()
+////                .map(User::getUsername)
+////                .collect(Collectors.toMap(
+////                        username -> username,
+////                        username -> AdminAvailability.UNAVAILABLE
+////                ));
+////
+////        loginAttemptCache = CacheBuilder
+////                .newBuilder()
+////                .build(new CacheLoader<String, AdminAvailability>() {
+////                    @Override
+////                    public AdminAvailability load(String s) throws Exception {
+////                        return null;
+////                    }
+////                });
+////
+////        loginAttemptCache.putAll(adminAvailabilityMap);
+//    }
 
     public boolean addUsernameToCache(String username) {
-        if (!whetherUsernameIsIncluded(username)) {
-            loginAttemptCache.put(username, AdminAvailability.UNAVAILABLE);
-            return true;
-        } else return false;
+        return this.redisCache.setnx(RedisConstants.ADMIN_USERNAME_CHAT.name() + ":" + username, AdminAvailability.UNAVAILABLE.name()) > 0;
     }
 
-    private boolean whetherUsernameIsIncluded(String username) {
-        return loginAttemptCache.getIfPresent(username) != null;
-    }
+//    public boolean addUsernameToCache(String username) {
+//        if (!whetherUsernameIsIncluded(username)) {
+//            loginAttemptCache.put(username, AdminAvailability.UNAVAILABLE);
+//            return true;
+//        } else return false;
+//    }
+
+//    private boolean whetherUsernameIsIncluded(String username) {
+//        return loginAttemptCache.getIfPresent(username) != null;
+//    }
 
     public void markAdminAsUnavailable(String username) {
-        if (whetherUsernameIsIncluded(username)) {
-            loginAttemptCache.put(username, AdminAvailability.UNAVAILABLE);
+        if (this.redisCache.exist(RedisConstants.ADMIN_USERNAME_CHAT.name() + ":" + username)) {
+            this.redisCache.set(RedisConstants.ADMIN_USERNAME_CHAT.name() + ":" + username, AdminAvailability.UNAVAILABLE.name());
         }
     }
 
-    public void markAdminAsAvailable(String username) {
-        if (!whetherUsernameIsIncluded(username)) {
-            this.addUsernameToCache(username);
-        }
-        loginAttemptCache.put(username, AdminAvailability.AVAILABLE);
-    }
-
-    public String getFreeAdmin() {
-        return loginAttemptCache
-                .asMap()
-                .entrySet()
-                .stream()
-                .filter(stringBooleanEntry -> stringBooleanEntry.getValue().equals(AdminAvailability.AVAILABLE))
-                .map(Map.Entry::getKey)
-                .findFirst()
-                .orElseThrow(() -> new LoggedAdminServiceException("No free admin available", 404, HttpStatus.NOT_FOUND));
+    public String markAdminAsAvailable(String username) {
+        return this.redisCache
+                .set(RedisConstants.ADMIN_USERNAME_CHAT.name() + ":" + username, AdminAvailability.AVAILABLE.name());
     }
 
     public List<String> getAllFreeAdmins() {
-        return loginAttemptCache
-                .asMap()
-                .entrySet()
+        List<String> collect1 = this.redisCache
+                .getKeys(RedisConstants.ADMIN_USERNAME_CHAT.name() + ":" + "*")
                 .stream()
-                .filter(stringBooleanEntry -> stringBooleanEntry.getValue().equals(AdminAvailability.AVAILABLE))
-                .map(Map.Entry::getKey)
                 .collect(Collectors.toList());
+
+        log.info("\n\n\n\n" + collect1.toString() + "\n\n\n\n");
+
+        List<String> collect = collect1
+                .stream()
+                .filter(admin -> this.redisCache.get(admin).equals(AdminAvailability.AVAILABLE.name()))
+                .map(admin -> admin.split(":")[1].replace("[", "").replace("]", ""))
+                .collect(Collectors.toList());
+
+        log.info("\n\n\n\n" + collect.toString() + "\n\n\n\n");
+
+        return collect;
+
+//        return loginAttemptCache
+//                .asMap()
+//                .entrySet()
+//                .stream()
+//                .filter(stringBooleanEntry -> stringBooleanEntry.getValue().equals(AdminAvailability.AVAILABLE))
+//                .map(Map.Entry::getKey)
+//                .collect(Collectors.toList());
     }
 
     public boolean isAdminInCache(String identifier) {
-        return loginAttemptCache.getIfPresent(identifier) != null;
+        return this.redisCache.exist(RedisConstants.ADMIN_USERNAME_CHAT.name() + ":" + identifier);
+
+        //return loginAttemptCache.getIfPresent(identifier) != null;
     }
 }

@@ -1,8 +1,10 @@
 package bartos.lukasz.bookingservice.domain.reservation;
 
+import bartos.lukasz.bookingservice.application.enums.PaymentStatus;
 import bartos.lukasz.bookingservice.domain.reservation.bookingStatus.BookingStatus;
 import bartos.lukasz.bookingservice.domain.reservation.opinion.Opinion;
 import bartos.lukasz.bookingservice.domain.reservation.reservationDto.ReservationDto;
+import bartos.lukasz.bookingservice.domain.reservation.reservationDto.ReservationInfoDto;
 import bartos.lukasz.bookingservice.domain.reservation.reservationDto.ReservationResponseDto;
 import bartos.lukasz.bookingservice.domain.room.Room;
 import bartos.lukasz.bookingservice.domain.user.User;
@@ -13,6 +15,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Objects;
 
@@ -94,5 +97,22 @@ public class Reservation {
 
         if (!Objects.isNull(opinion)) reservationResponseDto.setOpinionDto(opinion.toOpinionDto());
         return reservationResponseDto;
+    }
+
+    public ReservationInfoDto toReservationInfoDto() {
+        return ReservationInfoDto
+                .builder()
+                .id(this.id)
+                .reservationNumber(this.reservationNumber)
+                .startOfBooking(this.startOfBooking)
+                .endOfBooking(this.endOfBooking)
+                .roomNumber(this.room.getRoomNumber())
+                .paymentStatus(this.bookingStatus.getPaymentStatus())
+                .totalAmountForReservation(this.bookingStatus.getTotalAmountForReservation())
+                .name(this.user.getName())
+                .surname(this.user.getSurname())
+                .phone(this.user.getPhone())
+                .email(this.user.getEmail())
+                .build();
     }
 }

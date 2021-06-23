@@ -46,33 +46,13 @@ public class RoomService {
     public RoomDto save(RoomDto roomDto) {
         validateRoomRequest(roomDto);
         return roomRepository
-                .save(roomDto
-                        .toRoom())
+                .save(roomDto.toRoom())
                 .toRoomDto();
     }
 
-    @Transactional
-    public RoomDto update(Long roomId, RoomDto roomDto) throws RoomServiceException {
-        validateRoomRequest(roomDto);
-
-        Room room = roomRepository
-                .findById(roomId)
-                .orElseThrow(() -> new RoomServiceException("Room doesn't found", 404, HttpStatus.NOT_FOUND));
-
-        if (room.getRoomNumber() == null || !room.getRoomNumber().equals(roomDto.getRoomNumber()))
-            room.setRoomNumber(roomDto.getRoomNumber());
-        if (room.getRoomCapacity() == null || !room.getRoomCapacity().equals(roomDto.getRoomCapacity()))
-            room.setRoomCapacity(roomDto.getRoomCapacity());
-        if (room.getDescription() == null || !room.getDescription().equals(roomDto.getDescription()))
-            room.setDescription(roomDto.getDescription());
-        if (room.getPriceForNight() == null || !room.getPriceForNight().equals(roomDto.getPriceForNight()))
-            room.setPriceForNight(roomDto.getPriceForNight());
-        if (!room.getIsBusy().equals(roomDto.getIsBusy())) room.setIsBusy(roomDto.getIsBusy());
-
-        return roomDto;
-    }
-
     public RoomDto remove(Long id) {
+        if (Objects.isNull(id)) throw new RoomServiceException("Given id argument is null", 400, HttpStatus.BAD_REQUEST);
+
         RoomDto roomDto = get(id);
         roomRepository.deleteById(id);
         return roomDto;

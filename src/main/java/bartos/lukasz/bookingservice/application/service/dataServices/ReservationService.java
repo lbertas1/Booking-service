@@ -1,7 +1,9 @@
 package bartos.lukasz.bookingservice.application.service.dataServices;
 
+import bartos.lukasz.bookingservice.application.dto.events.OrderEmailData;
 import bartos.lukasz.bookingservice.application.enums.PaymentStatus;
 import bartos.lukasz.bookingservice.application.exception.ReservationServiceException;
+import bartos.lukasz.bookingservice.application.service.email.EmailService;
 import bartos.lukasz.bookingservice.domain.reservation.Reservation;
 import bartos.lukasz.bookingservice.domain.reservation.ReservationRepository;
 import bartos.lukasz.bookingservice.domain.reservation.bookingStatus.dto.BookingStatusDto;
@@ -15,6 +17,7 @@ import bartos.lukasz.bookingservice.domain.user.User;
 import bartos.lukasz.bookingservice.domain.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,6 +35,7 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final RoomRepository roomRepository;
     private final UserRepository userRepository;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     private void validateReservationRequest(ReservationRequestDto reservationRequestDto) {
         if (Objects.isNull(reservationRequestDto)) {
@@ -55,14 +59,11 @@ public class ReservationService {
                 .findById(reservationRequestDto.getUserId())
                 .orElseThrow(() -> new ReservationServiceException("User not found", 404, HttpStatus.NOT_FOUND));
 
-
         Room room = roomRepository
                 .findById(reservationRequestDto.getRoomId())
                 .orElseThrow(() -> new ReservationServiceException("Room not found", 404, HttpStatus.NOT_FOUND));
 
-
         Reservation newReservation = reservationRequestDto.toReservation();
-
 
         newReservation.setBookingStatus(
                 createBookingStatus(
@@ -75,64 +76,24 @@ public class ReservationService {
         newReservation.setRoom(room);
         newReservation.setReservationNumber(reservationRepository.getBiggestReservationNumber() + 1);
 
-        if (newReservation.getStartOfBooking().equals(LocalDate.now())) {
+        ReservationDto reservationDto = newReservation.toReservationDto();
+
+        if (reservationDto.getStartOfBooking().equals(LocalDate.now())) {
             room.setIsBusy(true);
             roomRepository.save(room);
         }
 
+        applicationEventPublisher
+                .publishEvent(OrderEmailData
+                        .builder()
+                        .recipient(user.toUserDto().getEmail())
+                        .userDto(user.toUserDto())
+                        .reservationDtos(List.of(reservationDto))
+                        .orderNumber(reservationDto.getReservationNumber().toString())
+                        .build());
+
         return reservationRepository.save(newReservation).toReservationDto();
     }
-
-//    @Transactional
-//    public ReservationResponseDto update(ReservationRequestDto reservationRequestDto) {
-//        validateReservationRequest(reservationRequestDto);
-//
-//        boolean newBookingStatus = false;
-//
-//        Reservation reservationFromBase = reservationRepository
-//                .findById(reservationRequestDto
-//                        .getId())
-//                .orElseThrow(() -> new ReservationServiceException("Reservation doesn't found", 404, HttpStatus.NOT_FOUND));
-//
-//
-//        if (!reservationFromBase.getUser().getId().equals(reservationRequestDto.getUserId())) {
-//            User newUser = userRepository
-//                    .findById(reservationRequestDto.getUserId())
-//                    .orElseThrow(() -> new ReservationServiceException("User not found", 404, HttpStatus.NOT_FOUND));
-//
-//            reservationFromBase.setUser(newUser);
-//        }
-//
-//        if (!reservationFromBase.getRoom().getId().equals(reservationRequestDto.getRoomId())) {
-//            Room room = roomRepository
-//                    .findById(reservationRequestDto.getRoomId())
-//                    .orElseThrow(() -> new ReservationServiceException("Room doesn't found", 404, HttpStatus.NOT_FOUND));
-//
-//            reservationFromBase.setRoom(room);
-//            newBookingStatus = true;
-//        }
-//
-//        if (!reservationRequestDto.getStartOfBooking().equals(reservationFromBase.getStartOfBooking())) {
-//            reservationFromBase.setStartOfBooking(reservationRequestDto.getStartOfBooking());
-//            newBookingStatus = true;
-//        }
-//
-//        if (!reservationRequestDto.getEndOfBooking().equals(reservationFromBase.getEndOfBooking())) {
-//            reservationFromBase.setEndOfBooking(reservationRequestDto.getEndOfBooking());
-//            newBookingStatus = true;
-//        }
-//
-//        if (newBookingStatus) {
-//            reservationFromBase
-//                    .setBookingStatus(entityDtoMapper
-//                            .toBookingStatus(createBookingStatus(
-//                                    reservationFromBase.getStartOfBooking(),
-//                                    reservationFromBase.getEndOfBooking(),
-//                                    reservationFromBase.getRoom().getPriceForNight())));
-//        }
-//
-//        return entityDtoMapper.fromReservationToReservationResponseDto(reservationRepository.saveAndFlush(reservationFromBase));
-//    }
 
     public ReservationResponseDto getById(Long id) {
         return get(id).toReservationResponseDto();

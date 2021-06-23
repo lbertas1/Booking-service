@@ -14,6 +14,7 @@ public class ChatService {
     private final SocketChannelControlService socketChannelControlService;
 
     public SocketChannelVariables endChat(String identifier) {
+        // TU BĘDZIE PROBLEM CHYBA TEŻ. ZROBIĆ ZALEŻNOŚĆ, ŻE ZALEŻY KTO KOŃCZY TEN CZAT.
         String secondSideIdentifier = socketChannelControlService.get(identifier);
 
         SocketChannelVariables socketChannelVariables = null;

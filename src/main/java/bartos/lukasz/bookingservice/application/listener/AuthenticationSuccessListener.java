@@ -18,7 +18,7 @@ public class AuthenticationSuccessListener {
 
         if (principal instanceof MyUserPrincipal) {
             MyUserPrincipal myUserPrincipal = (MyUserPrincipal) event.getAuthentication().getPrincipal();
-            loginAttemptService.evictUserFromLoginAttemptCache(myUserPrincipal.getUsername());
+            loginAttemptService.eraseUserFromLoginAttemptCache(myUserPrincipal.getUsername());
         }
 
     }

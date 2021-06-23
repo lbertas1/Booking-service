@@ -23,6 +23,9 @@ import java.time.LocalDate;
 )
 public class ReservationResponseDto {
 
+    // PRZEROBIĆ TAK, ŻEBY DODAĆ INFORMACJE O WYNAJMUJĄCYM I KONTAKT DO NIEGO!!!! I TO WYSYŁAĆ NA FRONTEND
+    // W SERWISIE POPRAWIĆ TAK, ŻEBY GENEROWAŁO MI REZERWACJĘ DO 3 DNI I POMIĘDZY 3 DNIAMI, A 7.
+
     private Long id;
     private Long reservationNumber;
     private LocalDate startOfBooking;

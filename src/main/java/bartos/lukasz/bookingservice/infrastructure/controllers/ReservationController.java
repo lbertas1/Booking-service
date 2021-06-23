@@ -1,7 +1,7 @@
 package bartos.lukasz.bookingservice.infrastructure.controllers;
 
 import bartos.lukasz.bookingservice.application.annotations.CoveredControllerAdvice;
-import bartos.lukasz.bookingservice.application.enums.EmailContent;
+import bartos.lukasz.bookingservice.application.dto.events.OrderEmailData;
 import bartos.lukasz.bookingservice.application.enums.PaymentStatus;
 import bartos.lukasz.bookingservice.application.exception.EmailServiceException;
 import bartos.lukasz.bookingservice.application.exception.ReservationServiceException;
@@ -49,13 +49,6 @@ public class ReservationController {
     @PostMapping("/save")
     ResponseEntity<ReservationResponseDto> save(@RequestBody ReservationRequestDto reservationRequestDto) throws ReservationServiceException, EmailServiceException {
         ReservationDto savedReservation = reservationService.save(reservationRequestDto);
-
-//        emailService
-//                .send(savedReservation.getUserDto(),
-//                        List.of(savedReservation),
-//                        savedReservation.getReservationNumber().toString(),
-//                        EmailContent.RESERVATION);
-
         return ResponseEntity.status(HttpStatus.CREATED).body(savedReservation.toReservationResponseDto());
     }
 

@@ -11,9 +11,6 @@ import org.springframework.stereotype.Component;
 @AllArgsConstructor
 public class AdminLoginListener {
 
-    // PRZYGOTOWANIE DANYCH DLA ADMINA PODSUMOWUJĄCYCH. DODANIE W ENCJI KOLEJNEGO POLA DLA CITY, ŻEBY POBIERAĆ ODPOWIEDNIE DANE.
-    // ZMIENI SIĘ LOGIKA
-
     private final LoggedAdminService loggedAdminService;
     private final SimpMessageSendingOperations simpMessageSendingOperations;
 

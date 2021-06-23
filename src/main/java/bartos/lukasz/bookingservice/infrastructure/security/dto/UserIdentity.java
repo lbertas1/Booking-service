@@ -1,14 +1,14 @@
 package bartos.lukasz.bookingservice.infrastructure.security.dto;
 
 import bartos.lukasz.bookingservice.domain.user.enums.Role;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 
-@Data
+@Getter
+@SuperBuilder
+@NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class Identity {
+public class UserIdentity {
     private Long id;
     private String username;
     private String name;

@@ -123,7 +123,19 @@
             <version>2.3.0</version>
         </dependency>
 
-<!--        WEB SOCKET      -->
+        <!--        liquibase   -->
+        <!--        <dependency>-->
+        <!--            <groupId>org.liquibase</groupId>-->
+        <!--            <artifactId>liquibase-core</artifactId>-->
+        <!--            <version>4.3.5</version>-->
+        <!--        </dependency>-->
+        <!--        <dependency>-->
+        <!--            <groupId>org.liquibase.ext</groupId>-->
+        <!--            <artifactId>liquibase-hibernate5</artifactId>-->
+        <!--            <version>4.3.5</version>-->
+        <!--        </dependency>-->
+
+        <!--        WEB SOCKET      -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-websocket</artifactId>
@@ -132,11 +144,11 @@
             <groupId>org.webjars</groupId>
             <artifactId>webjars-locator-core</artifactId>
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>org.webjars</groupId>-->
-<!--            <artifactId>sockjs-client</artifactId>-->
-<!--            <version>1.0.2</version>-->
-<!--        </dependency>-->
+        <!--        <dependency>-->
+        <!--            <groupId>org.webjars</groupId>-->
+        <!--            <artifactId>sockjs-client</artifactId>-->
+        <!--            <version>1.0.2</version>-->
+        <!--        </dependency>-->
         <dependency>
             <groupId>org.webjars</groupId>
             <artifactId>stomp-websocket</artifactId>
@@ -153,7 +165,7 @@
             <version>3.1.1-1</version>
         </dependency>
 
-<!--        SWAGGER -->
+        <!--        SWAGGER -->
         <dependency>
             <groupId>io.springfox</groupId>
             <artifactId>springfox-swagger2</artifactId>
@@ -165,25 +177,49 @@
             <version>2.9.2</version>
         </dependency>
 
-
-<!--    OBSŁUGA TCP     -->
-<!--        <dependency>-->
-<!--            <groupId>org.springframework.boot</groupId>-->
-<!--            <artifactId>spring-boot-starter-reactor-netty</artifactId>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>org.springframework.boot</groupId>-->
-<!--            <artifactId>spring-boot-starter-amqp</artifactId>-->
-<!--        </dependency>-->
+        <!--        HIBERNATE CACHE    -->
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-ehcache</artifactId>
+            <version>5.4.17.Final</version>
+        </dependency>
 
 
-<!--    WYDAJNOŚĆ, N+1 - DO OGARNIĘCIA PRZY TESTACH  -->
-<!--    https://bulldogjob.pl/news/1163-eliminacja-problemu-n-1-zapytan-w-hibernate    , USTAWIĆ SCOPE-->
-<!--        <dependency>-->
-<!--            <groupId>com.yannbriancon</groupId>-->
-<!--            <artifactId>spring-hibernate-query-utils</artifactId>-->
-<!--            <version>1.0.3</version>-->
-<!--        </dependency>-->
+        <!--        JEDIS       -->
+        <dependency>
+            <groupId>redis.clients</groupId>
+            <artifactId>jedis</artifactId>
+            <version>2.8.1</version>
+        </dependency>
+
+
+<!--           EMAIL      -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-mail</artifactId>
+        </dependency>
+
+
+
+
+        <!--    OBSŁUGA TCP     -->
+        <!--        <dependency>-->
+        <!--            <groupId>org.springframework.boot</groupId>-->
+        <!--            <artifactId>spring-boot-starter-reactor-netty</artifactId>-->
+        <!--        </dependency>-->
+        <!--        <dependency>-->
+        <!--            <groupId>org.springframework.boot</groupId>-->
+        <!--            <artifactId>spring-boot-starter-amqp</artifactId>-->
+        <!--        </dependency>-->
+
+
+        <!--    WYDAJNOŚĆ, N+1 - DO OGARNIĘCIA PRZY TESTACH  -->
+        <!--    https://bulldogjob.pl/news/1163-eliminacja-problemu-n-1-zapytan-w-hibernate    , USTAWIĆ SCOPE-->
+        <!--        <dependency>-->
+        <!--            <groupId>com.yannbriancon</groupId>-->
+        <!--            <artifactId>spring-hibernate-query-utils</artifactId>-->
+        <!--            <version>1.0.3</version>-->
+        <!--        </dependency>-->
     </dependencies>
 
     <build>
@@ -210,6 +246,38 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <!--            liquibase   -->
+            <!--            <plugin>-->
+            <!--                <groupId>org.liquibase</groupId>-->
+            <!--                <artifactId>liquibase-maven-plugin</artifactId>-->
+            <!--                <version>4.3.5</version>-->
+            <!--                <configuration>-->
+            <!--                    <propertyFile>./src/main/resources/database/liquibase.properties</propertyFile>-->
+            <!--                </configuration>-->
+            <!--                <dependencies>-->
+            <!--                    <dependency>-->
+            <!--                        <groupId>org.liquibase.ext</groupId>-->
+            <!--                        <artifactId>liquibase-hibernate5</artifactId>-->
+            <!--                        <version>4.3.5</version>-->
+            <!--                    </dependency>-->
+            <!--                    <dependency>-->
+            <!--                        <groupId>org.springframework.boot</groupId>-->
+            <!--                        <artifactId>spring-boot-starter-data-jpa</artifactId>-->
+            <!--                        <version>2.5.0</version>-->
+            <!--                    </dependency>-->
+            <!--                    <dependency>-->
+            <!--                        <groupId>javax.validation</groupId>-->
+            <!--                        <artifactId>validation-api</artifactId>-->
+            <!--                        <version>2.0.1.Final</version>-->
+            <!--                    </dependency>-->
+            <!--                    <dependency>-->
+            <!--                        <groupId>org.javassist</groupId>-->
+            <!--                        <artifactId>javassist</artifactId>-->
+            <!--                        <version>3.27.0-GA</version>-->
+            <!--                    </dependency>-->
+            <!--                </dependencies>-->
+            <!--            </plugin>-->
         </plugins>
     </build>
 </project>

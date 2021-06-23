@@ -1,32 +1,20 @@
 package bartos.lukasz.bookingservice.application.service.email;
 
-import bartos.lukasz.bookingservice.application.enums.EmailContent;
+import bartos.lukasz.bookingservice.application.dto.events.EmailData;
+import bartos.lukasz.bookingservice.application.dto.events.OrderEmailData;
+import bartos.lukasz.bookingservice.application.dto.events.RegistrationEmailData;
 import bartos.lukasz.bookingservice.application.exception.EmailServiceException;
-import bartos.lukasz.bookingservice.domain.reservation.reservationDto.ReservationDto;
-import bartos.lukasz.bookingservice.domain.user.dto.UserDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
-import javax.activation.DataHandler;
-import javax.activation.DataSource;
-import javax.activation.FileDataSource;
-import javax.mail.*;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeBodyPart;
+import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeMultipart;
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.NoSuchFileException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.List;
-import java.util.Properties;
 
 @Slf4j
 @Service
@@ -36,120 +24,42 @@ public class EmailService {
     @Value("${spring.profiles.active}")
     private String applicationProfile;
 
-    private String emailAddress;
-    private String emailPassword;
-
-    private final Environment environment;
+    private final JavaMailSender javaMailSender;
 
     private final EmailHtmlReservationContentService emailHtmlReservationContentService;
     private final EmailHtmlRegistrationContentService emailHtmlRegistrationContentService;
     private final EmailPdfFileService emailPdfFileService;
 
-    public void send(UserDto userDto, List<ReservationDto> reservationDtos, String orderNumber, EmailContent emailContent) throws EmailServiceException {
+    public void send(EmailData emailData) {
         try {
-            String content;
-            readEmailPassword();
+            MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+            MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true);
+            mimeMessageHelper.setTo(emailData.getRecipient());
 
-            Session session = createSession();
-            MimeMessage mimeMessage = new MimeMessage(session);
-
-            if (emailContent.equals(EmailContent.RESERVATION)) {
-                content = emailHtmlReservationContentService.renderHtmlContent();
-                emailPdfFileService.createOrderPdf(userDto, reservationDtos, orderNumber);
-                String attachmentPath = getAttachmentPath(orderNumber);
-                String fileName = "order " + orderNumber + ".pdf";
-                prepareEmailMessageWithFile(mimeMessage, prepareMimeBodyPartWithFile(attachmentPath, fileName, content), userDto.getEmail(), orderNumber);
-            } else {
-                content = emailHtmlRegistrationContentService.renderHtmlContent();
-                prepareEmailMessage(mimeMessage, userDto.getEmail(), content);
+            if (emailData instanceof OrderEmailData) {
+                javaMailSender.send(prepareEmailWithOrder((OrderEmailData) emailData, mimeMessageHelper).getMimeMessage());
+            } else if (emailData instanceof RegistrationEmailData) {
+                javaMailSender.send(prepareRegistrationEmail(mimeMessageHelper).getMimeMessage());
             }
-
-            Transport.send(mimeMessage);
-        } catch (Exception e) {
+        } catch (MessagingException e) {
             throw new EmailServiceException(e.getMessage(), 500, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    private void prepareEmailMessage(MimeMessage mimeMessage, String to, String content) throws EmailServiceException {
-        try {
-            mimeMessage.setContent(content, "text/html; charset=utf-8");
-            mimeMessage.setFrom(new InternetAddress(emailAddress));
-            mimeMessage.setRecipients(Message.RecipientType.TO, InternetAddress.parse(to));
-            mimeMessage.setSubject("Registration");
-        } catch (Exception e) {
-            throw new EmailServiceException(e.getMessage() , 500, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    private MimeMessageHelper prepareEmailWithOrder(OrderEmailData orderEmailData, MimeMessageHelper mimeMessageHelper) throws MessagingException {
+        mimeMessageHelper.setText(emailHtmlReservationContentService.renderHtmlContent(), true);
+        emailPdfFileService.createOrderPdf(orderEmailData.getUserDto(), orderEmailData.getReservationDtos(), orderEmailData.getOrderNumber());
+        mimeMessageHelper.setSubject("Order " + orderEmailData.getOrderNumber());
+        mimeMessageHelper.addAttachment("order " + orderEmailData.getOrderNumber() + ".pdf",
+                new File(getAttachmentPath(orderEmailData.getOrderNumber())));
+        return mimeMessageHelper;
     }
 
-    private void prepareEmailMessageWithFile(MimeMessage mimeMessage, Multipart multipart, String to, String orderNumber) throws EmailServiceException {
-        try {
-            mimeMessage.setContent(multipart);
-            mimeMessage.setFrom(new InternetAddress(emailAddress));
-            mimeMessage.setRecipients(Message.RecipientType.TO, InternetAddress.parse(to));
-            mimeMessage.setSubject("order " + orderNumber);
-        } catch (Exception e) {
-            throw new EmailServiceException(e.getMessage(), 500, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
+    private MimeMessageHelper prepareRegistrationEmail(MimeMessageHelper mimeMessageHelper) throws MessagingException {
+        mimeMessageHelper.setText(emailHtmlRegistrationContentService.renderHtmlContent(), true);
+        mimeMessageHelper.setSubject("Reservation confirmation");
 
-    private Session createSession() {
-        Properties properties = new Properties();
-        properties.put("mail.smtp.starttls.enable", "true");
-        properties.put("mail.smtp.host", "smtp.gmail.com");
-        properties.put("mail.smtp.port", "587");
-        properties.put("mail.smtp.auth", "true");
-
-        return Session.getInstance(properties, new Authenticator() {
-            @Override
-            protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(emailAddress, emailPassword);
-            }
-        });
-    }
-
-    private Multipart prepareMimeBodyPartWithFile(String path, String fileName, String html) {
-        try {
-            BodyPart mimeBodyPart1 = new MimeBodyPart();
-            mimeBodyPart1.setContent(html, "text/html; charset=utf-8");
-            MimeBodyPart mimeBodyPart2 = new MimeBodyPart();
-            DataSource dataSource = new FileDataSource(path);
-            mimeBodyPart2.setDataHandler(new DataHandler(dataSource));
-            mimeBodyPart2.setFileName(fileName);
-
-            return prepareMultipart(mimeBodyPart1, mimeBodyPart2);
-        } catch (MessagingException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    private Multipart prepareMultipart(BodyPart mimeBodyPart1, MimeBodyPart mimeBodyPart2) {
-        try {
-            Multipart multipart = new MimeMultipart();
-            multipart.addBodyPart(mimeBodyPart1);
-            multipart.addBodyPart(mimeBodyPart2);
-            return multipart;
-        } catch (MessagingException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    private void readEmailPassword() {
-        try {
-            if (applicationProfile.equals("dev")) {
-                List<String> strings = Files.readAllLines(Path.of("poczta.txt"));
-                emailAddress = strings.get(0);
-                emailPassword = strings.get(1);
-            } else if (applicationProfile.equals("prod")) {
-                emailAddress = environment.getProperty("email.address");
-                emailPassword = environment.getProperty("email.password");
-            }
-
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw new EmailServiceException("NOW SUCH FILE EXCEPTION!   ", 500, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        return mimeMessageHelper;
     }
 
     private String getAttachmentPath(String orderNumber) {

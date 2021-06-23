@@ -3,20 +3,24 @@ package bartos.lukasz.bookingservice.domain.room;
 import bartos.lukasz.bookingservice.application.enums.Equipments;
 import bartos.lukasz.bookingservice.domain.room.dto.RoomDto;
 import io.swagger.annotations.ApiModel;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@SuperBuilder
-@NoArgsConstructor
 @Data
 @Entity
 @Table(name = "rooms")
+@SuperBuilder
+@NoArgsConstructor
+@Cacheable
+@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class Room {
 
     @Id
